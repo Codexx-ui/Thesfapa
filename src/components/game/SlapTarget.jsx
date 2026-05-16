@@ -45,8 +45,8 @@ function FPSWeapon({ mode, fireKey }) {
   const anim =
     mode === "slap"   ? { x: [-20, 0], y: [20, 0], rotate: [-15, 0] } :
     mode === "punch"  ? { x: [-30, 0], y: [10, 0] } :
-                        { y: [40, 0], rotate: [-15, 0], scale: [1.1, 1] };
-  const dur = mode === "gun" ? 0.06 : 0.15;
+                        { y: [15, 0], rotate: [-5, 0] };
+  const dur = mode === "gun" ? 0.08 : 0.15;
   const emoji = mode === "gun" ? "🔫" : mode === "punch" ? "👊" : "🤚";
   const flip = mode !== "gun" ? "scaleX(-1)" : undefined;
 
@@ -76,7 +76,6 @@ export default function SlapTarget({ onSlap, disabled, mode }) {
   const [damageLevel, setDamageLevel] = useState(0);
   const [bruiseOpacity, setBruiseOpacity] = useState(0);
   const [shakeKey, setShakeKey]     = useState(0);   // retrigger CSS class
-  const [bulletHoles, setBulletHoles] = useState([]); // persistent gun marks
 
   const hitCountRef = useRef(0);
   const EMOJIS = mode === "punch" ? PUNCH_EMOJIS : mode === "gun" ? GUN_EMOJIS : SLAP_EMOJIS;
@@ -102,11 +101,6 @@ export default function SlapTarget({ onSlap, disabled, mode }) {
       setGunFiring((n) => n + 1);
       setMuzzleFlash(true);
       setTimeout(() => setMuzzleFlash(false), 100);
-
-      // Add persistent bullet hole
-      const holeX = Math.random() * 60 + 20; // range 20-80%
-      const holeY = Math.random() * 60 + 20; // range 20-80%
-      setBulletHoles((prev) => [...prev.slice(-15), { x: holeX, y: holeY, id: Date.now() }]);
     } else {
       const side = x > 0 ? "right" : "left";
       setHandAnim({ id: Date.now(), side, mode });
@@ -267,19 +261,6 @@ export default function SlapTarget({ onSlap, disabled, mode }) {
                 width: mark.size, height: mark.size,
                 background: "radial-gradient(circle, rgba(160,0,0,0.85) 0%, rgba(100,0,0,0.5) 60%, transparent 100%)",
                 boxShadow: "0 0 4px rgba(120,0,0,0.6)",
-              }}
-            />
-          ))}
-          
-          {/* Bullet holes */}
-          {bulletHoles.map((hole) => (
-            <div
-              key={hole.id}
-              className="absolute w-3 h-3 rounded-full bg-zinc-900 border border-zinc-700 shadow-inner z-10"
-              style={{
-                top: `${hole.y}%`,
-                left: `${hole.x}%`,
-                boxShadow: "inset 0 0 4px #000",
               }}
             />
           ))}
