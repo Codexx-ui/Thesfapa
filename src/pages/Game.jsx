@@ -128,11 +128,11 @@ export default function Game() {
           animate={{ y: 0, opacity: 1 }}
           className="text-center"
         >
-          <h1 className="font-display text-5xl md:text-6xl text-foreground tracking-tight">
-            Φάπα - Ξάπλα
+          <h1 className="font-display text-5xl md:text-6xl text-foreground tracking-tight uppercase">
+            ΦΑΠΑ ΞΑΠΛΑ
           </h1>
-          <p className="font-display text-secondary text-lg mt-1 tracking-wide drop-shadow-sm">
-            ✨ Πύργος Edition ✨
+          <p className="font-display text-secondary text-lg mt-1 tracking-widest drop-shadow-sm uppercase">
+            ✨ ΠΥΡΓΟΣ EDITION ✨
           </p>
         </motion.div>
 
