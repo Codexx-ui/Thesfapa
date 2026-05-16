@@ -61,7 +61,7 @@ export default function SplashScreen({ onStart }) {
           >
             <div className="absolute inset-0 rounded-full bg-white/20 animate-ping group-hover:animate-none opacity-0 group-hover:opacity-10" />
             <Play className="w-8 h-8 mr-3 fill-current" />
-            ΕΝΑΡΞΗ
+            Συνέχεια
           </Button>
         </motion.div>
       </div>
@@ -70,9 +70,9 @@ export default function SplashScreen({ onStart }) {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 1 }}
-        className="fixed bottom-8 text-muted-foreground/50 font-body text-xs tracking-widest"
+        className="fixed bottom-8 text-muted-foreground/50 font-body text-[10px] md:text-xs tracking-wide px-4 max-w-2xl"
       >
-        BASE44 GAMING ENGINE • 2024
+        Οποιαδήποτε ομοιότητα με πρόσωπα, καταστάσεις ή γεγονότα είναι εντελώς συμπτωματική και δεν ανταποκρίνεται στην πραγματικότητα. Αν όμως νομίζεις ότι κάτι σου θυμίζει... μάλλον έχεις δίκιο.
       </motion.div>
     </motion.div>
   );
