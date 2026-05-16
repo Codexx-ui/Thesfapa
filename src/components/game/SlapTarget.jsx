@@ -281,8 +281,8 @@ export default function SlapTarget({ onSlap, disabled, mode }) {
             />
           ))}
 
-          {/* Bullet holes - ONLY visible in gun mode */}
-          {mode === "gun" && bulletHoles.map((hole) => (
+          {/* Bullet holes - Persistent across modes */}
+          {bulletHoles.map((hole) => (
             <div
               key={hole.id}
               className="absolute w-3 h-3 rounded-full bg-zinc-900 border border-zinc-700 shadow-inner z-10"
