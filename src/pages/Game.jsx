@@ -132,9 +132,11 @@ export default function Game() {
   }, []);
 
   const startGame = useCallback((customName) => {
-    if (customName) {
-      setNickname(customName);
-      localStorage.setItem("slap_nickname", customName);
+    // Always use the most recent nickname - from param, localStorage, or state
+    const nameToUse = customName || localStorage.getItem("slap_nickname") || nickname;
+    if (nameToUse) {
+      setNickname(nameToUse);
+      localStorage.setItem("slap_nickname", nameToUse);
     }
     setScore(0);
     setCombo(0);
@@ -144,7 +146,7 @@ export default function Game() {
     setGameState("playing");
     setGameId(id => id + 1);
     lastSlapTime.current = 0;
-  }, []);
+  }, [nickname]);
 
   // Timer countdown
   useEffect(() => {
@@ -173,16 +175,11 @@ export default function Game() {
   useEffect(() => {
     if (gameState === "over") {
       try {
-        // 1. Get the nickname
-        const savedNickname = localStorage.getItem("slap_nickname");
-        
-        // 2. Generate working email style
         const uniqueId = `${Date.now()}_${Math.floor(Math.random() * 1000)}`;
         const email = `guest_${uniqueId}@fapa.com`;
         
-        // 3. Final Name logic
-        let finalName = savedNickname || "Φαπατζής";
-        if (finalName === "[object Object]") finalName = "Φαπατζής";
+        // nickname state is guaranteed to be set by startGame
+        const finalName = nickname || localStorage.getItem("slap_nickname") || "Ανώνυμος";
 
         const dataToSave = {
           player_email: String(email),
@@ -205,7 +202,7 @@ export default function Game() {
         console.error("GameOver effect crash:", e);
       }
     }
-  }, [gameState, currentUser, nickname, score, maxCombo, totalSlaps, mode]);
+  }, [gameState]);
 
   const handleSlap = useCallback(() => {
     if (gameState !== "playing") return;
