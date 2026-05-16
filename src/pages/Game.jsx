@@ -10,6 +10,8 @@ import GameOverModal from "../components/game/GameOverModal";
 import Leaderboard from "../components/game/Leaderboard";
 import SplashScreen from "../components/game/SplashScreen";
 import BackgroundMusic from "../components/game/BackgroundMusic";
+import SettingsModal from "../components/game/SettingsModal";
+import { Settings } from "lucide-react";
 
 const GAME_DURATION = 15;
 const COMBO_WINDOW = 700;
@@ -43,6 +45,7 @@ export default function Game() {
   const [character, setCharacter] = useState(CHARACTERS[0]);
   const [mode, setMode] = useState("slap"); // slap | punch | gun
   const [isNightMode, setIsNightMode] = useState(false);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [score, setScore] = useState(0);
   const [combo, setCombo] = useState(0);
   const [maxCombo, setMaxCombo] = useState(0);
@@ -162,22 +165,18 @@ export default function Game() {
           )}
         </AnimatePresence>
 
-        {/* Character Selection (only in idle) */}
+        {/* Character Selection (only in idle) - REPLACED BY SETTINGS MODAL */}
+        
+        {/* Settings Toggle (only in idle) */}
         {gameState === "idle" && (
-          <div className="flex gap-4 mb-4">
-            {CHARACTERS.map((c) => (
-              <button
-                key={c.id}
-                onClick={() => setCharacter(c)}
-                className={cn(
-                  "relative w-20 h-20 rounded-full border-2 overflow-hidden transition-all",
-                  character.id === c.id ? "border-primary scale-110 shadow-lg" : "border-transparent opacity-50 grayscale"
-                )}
-              >
-                <img src={c.image} alt={c.name} className="w-full h-full object-cover" />
-              </button>
-            ))}
-          </div>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => setIsSettingsOpen(true)}
+            className="absolute top-4 right-4 rounded-full bg-card/40 backdrop-blur-md shadow-lg border border-border/50 hover:bg-card/60 transition-all active:scale-90"
+          >
+            <Settings className="w-6 h-6 text-foreground" />
+          </Button>
         )}
 
         {/* Title */}
@@ -323,19 +322,19 @@ export default function Game() {
               >
                 {mode === "punch" ? "👊 Χτύπα τον στο πρόσωπο!" : mode === "gun" ? "🔫 Ρίξ' του μερικές!" : "👋 Χτύπα τον στο πρόσωπο!"}
               </motion.p>
-              
-              {/* Night Mode Toggle */}
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => setIsNightMode(!isNightMode)}
-                className="mt-4 rounded-full bg-card/40 backdrop-blur hover:bg-card/60"
-              >
-                {isNightMode ? <Sun className="w-5 h-5 text-yellow-400" /> : <Moon className="w-5 h-5 text-indigo-400" />}
-              </Button>
             </motion.div>
           )}
         </AnimatePresence>
+
+        <SettingsModal
+          isOpen={isSettingsOpen}
+          onClose={() => setIsSettingsOpen(false)}
+          characters={CHARACTERS}
+          selectedCharacter={character}
+          onSelectCharacter={setCharacter}
+          isNightMode={isNightMode}
+          onToggleNightMode={setIsNightMode}
+        />
 
         {/* Game Over */}
         <AnimatePresence>
