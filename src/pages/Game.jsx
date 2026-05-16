@@ -173,18 +173,22 @@ export default function Game() {
   useEffect(() => {
     if (gameState === "over") {
       try {
-        let savedNickname = localStorage.getItem("slap_nickname") || nickname;
+        // 1. Get the latest nickname from storage or state
+        const storedNickname = localStorage.getItem("slap_nickname");
+        const currentNickname = nickname || storedNickname;
         
-        // Filter out broken strings
-        if (savedNickname === "[object Object]" || !savedNickname) {
-          savedNickname = "";
-          localStorage.removeItem("slap_nickname");
-        }
-
+        // 2. Identify the player
         const email = currentUser?.email || `guest_${Date.now()}_${Math.floor(Math.random() * 1000)}@fapa.com`;
-        let rawName = savedNickname || (currentUser && (currentUser.full_name || currentUser.display_name)) || "Ανώνυμος Φαπατζής";
         
-        // Final safety net to ensure rawName is NOT an object and not the broken string
+        // 3. Prioritize Nickname over Gmail Name
+        let rawName = currentNickname;
+        
+        // If nickname is empty or broken, fallback to Gmail name
+        if (!rawName || rawName === "[object Object]") {
+          rawName = (currentUser && (currentUser.full_name || currentUser.display_name)) || "Ανώνυμος Φαπατζής";
+        }
+        
+        // Final safety net to ensure rawName is NOT an object
         if (typeof rawName === 'object' && rawName !== null) {
           rawName = rawName.display_name || rawName.full_name || "Φαπατζής";
         }
