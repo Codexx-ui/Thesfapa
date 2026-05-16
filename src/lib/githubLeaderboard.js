@@ -47,8 +47,16 @@ export async function saveToLeaderboard({ player_name, score, max_combo }) {
     // Step 2: Decode, add new score, sort, keep top 100
     let scores = [];
     try {
-      scores = JSON.parse(atob(apiData.content.replace(/\n/g, "")));
-    } catch {
+      // Decode properly handling UTF-8 characters
+      const binaryString = atob(apiData.content.replace(/\n/g, ""));
+      try {
+        scores = JSON.parse(decodeURIComponent(escape(binaryString)));
+      } catch {
+        // Fallback if it wasn't encoded with unescape(encodeURIComponent)
+        scores = JSON.parse(binaryString);
+      }
+    } catch (err) {
+      console.error("Failed to parse existing leaderboard:", err);
       scores = [];
     }
 

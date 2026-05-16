@@ -62,7 +62,7 @@ function ShareButton({ score, maxCombo }) {
   );
 }
 
-export default function GameOverModal({ score, maxCombo, totalSlaps, onRestart, onHome, currentUserEmail, translations: t }) {
+export default function GameOverModal({ score, maxCombo, totalSlaps, hitCounts = { slap: 0, punch: 0, gun: 0 }, onRestart, onHome, currentUserEmail, translations: t, mode }) {
   const isEn = t.language === "en";
   const rankLabels = {
     slap_god: isEn ? "SLAP GOD 🏆" : "ΘΕΟΣ ΤΗΣ ΦΑΠΑΣ 🏆",
@@ -125,12 +125,42 @@ export default function GameOverModal({ score, maxCombo, totalSlaps, onRestart, 
             <span className="font-display text-xl text-primary">x{maxCombo}</span>
           </div>
           <div className="h-px bg-border/50" />
-          <div className="flex items-center justify-between">
-            <span className="flex items-center gap-2 text-muted-foreground font-body text-xs uppercase tracking-wider">
-              👋 {t.slaps}
-            </span>
-            <span className="font-display text-xl text-foreground">{totalSlaps}</span>
-          </div>
+          
+          {hitCounts.slap > 0 && (
+            <div className="flex items-center justify-between">
+              <span className="flex items-center gap-2 text-muted-foreground font-body text-xs uppercase tracking-wider">
+                👋 {isEn ? "Slaps" : "Χαστούκια"}
+              </span>
+              <span className="font-display text-xl text-foreground">{hitCounts.slap}</span>
+            </div>
+          )}
+
+          {hitCounts.punch > 0 && (
+            <div className="flex items-center justify-between">
+              <span className="flex items-center gap-2 text-muted-foreground font-body text-xs uppercase tracking-wider">
+                👊 {isEn ? "Punches" : "Μπουνιές"}
+              </span>
+              <span className="font-display text-xl text-foreground">{hitCounts.punch}</span>
+            </div>
+          )}
+
+          {hitCounts.gun > 0 && (
+            <div className="flex items-center justify-between">
+              <span className="flex items-center gap-2 text-muted-foreground font-body text-xs uppercase tracking-wider">
+                🔫 {isEn ? "Bullets" : "Σφαίρες"}
+              </span>
+              <span className="font-display text-xl text-foreground">{hitCounts.gun}</span>
+            </div>
+          )}
+
+          {totalSlaps === 0 && (
+            <div className="flex items-center justify-between">
+              <span className="flex items-center gap-2 text-muted-foreground font-body text-xs uppercase tracking-wider">
+                {mode === "gun" ? "🔫" : mode === "punch" ? "👊" : "👋"} {mode === "gun" ? (isEn ? "Bullets" : "Σφαίρες") : mode === "punch" ? (isEn ? "Punches" : "Μπουνιές") : (isEn ? "Slaps" : "Χαστούκια")}
+              </span>
+              <span className="font-display text-xl text-foreground">0</span>
+            </div>
+          )}
         </div>
 
         <Button

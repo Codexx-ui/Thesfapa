@@ -33,7 +33,14 @@ export default function BackgroundMusic({ autoStart }) {
 
   return (
     <div className="fixed bottom-4 right-4 z-[100]">
-      <audio ref={audioRef} src={introMusic} loop />
+      <audio 
+        ref={audioRef} 
+        src={introMusic} 
+        onEnded={() => {
+          setIsPlaying(false);
+          setIsMuted(true);
+        }}
+      />
       <Button
         variant="outline"
         size="icon"

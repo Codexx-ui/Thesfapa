@@ -37,7 +37,7 @@ const TRANSLATIONS = {
     play: "ΠΑΙΞΕ ΤΩΡΑ",
     continue: "Συνέχεια",
     points: "Πόντοι",
-    slaps: "Χαστούκια",
+    slaps: "Χτυπήματα",
     max_combo: "Max Combo",
     game_over: "ΤΕΛΟΣ ΠΑΙΧΝΙΔΙΟΥ",
     restart: "Ξαναπαίξε",
@@ -63,7 +63,7 @@ const TRANSLATIONS = {
     play: "PLAY NOW",
     continue: "Continue",
     points: "Points",
-    slaps: "Slaps",
+    slaps: "Hits",
     max_combo: "Max Combo",
     game_over: "GAME OVER",
     restart: "Play Again",
@@ -126,6 +126,7 @@ export default function Game() {
   const [combo, setCombo] = useState(0);
   const [maxCombo, setMaxCombo] = useState(0);
   const [totalSlaps, setTotalSlaps] = useState(0);
+  const [hitCounts, setHitCounts] = useState({ slap: 0, punch: 0, gun: 0 });
   const [timeLeft, setTimeLeft] = useState(GAME_DURATION);
   const [currentUser, setCurrentUser] = useState(null);
   const lastSlapTime = useRef(0);
@@ -148,6 +149,7 @@ export default function Game() {
     setMaxCombo(0);
     maxComboRef.current = 0;
     setTotalSlaps(0);
+    setHitCounts({ slap: 0, punch: 0, gun: 0 });
     setTimeLeft(GAME_DURATION);
     setGameState("playing");
     setGameId(id => id + 1);
@@ -167,12 +169,7 @@ export default function Game() {
       max_combo: Number(currentMaxCombo),
     });
 
-    if (ok) {
-      toast({
-        title: "Σκορ Αποθηκεύτηκε!",
-        description: `${finalName}: ${currentScore} πόντοι`,
-      });
-    } else {
+    if (!ok) {
       toast({
         variant: "destructive",
         title: "Αποτυχία αποθήκευσης",
@@ -209,6 +206,7 @@ export default function Game() {
     const timeSinceLastSlap = now - lastSlapTime.current;
 
     setTotalSlaps((prev) => prev + 1);
+    setHitCounts((prev) => ({ ...prev, [mode]: prev[mode] + 1 }));
 
     const basePoints = mode === "gun" ? 50 : mode === "punch" ? 20 : 10;
 
@@ -240,7 +238,7 @@ export default function Game() {
     }
 
     lastSlapTime.current = now;
-  }, [comboWindow, gameState]);
+  }, [comboWindow, gameState, mode]);
 
   return (
     <div className="min-h-screen bg-background flex flex-col items-center justify-center p-4 overflow-hidden relative">
@@ -516,10 +514,12 @@ export default function Game() {
               score={score}
               maxCombo={maxCombo}
               totalSlaps={totalSlaps}
+              hitCounts={hitCounts}
               onRestart={startGame}
               onHome={() => setGameState("idle")}
               currentUserEmail={currentUser?.email}
               translations={t}
+              mode={mode}
             />
           )}
         </AnimatePresence>
