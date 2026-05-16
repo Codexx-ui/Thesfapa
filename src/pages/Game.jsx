@@ -169,45 +169,44 @@ export default function Game() {
   // Save score when game ends
   useEffect(() => {
     if (gameState === "over") {
-      if (currentUser) {
-        // Sanitize data and ensure name is a clean string
-        const rawName = nickname || currentUser.full_name || currentUser.email.split("@")[0];
-        const cleanName = typeof rawName === 'object' ? (rawName.display_name || rawName.full_name || JSON.stringify(rawName)) : String(rawName);
+      try {
+        // According to RLS rules, user MUST be authenticated and email must match user email
+        if (currentUser && currentUser.email) {
+          // Sanitize data and ensure name is a clean string
+          const rawName = nickname || currentUser.full_name || currentUser.display_name || currentUser.email.split("@")[0] || "Παίκτης";
+          const cleanName = typeof rawName === 'object' ? (rawName.display_name || rawName.full_name || "Παίκτης") : String(rawName);
 
-        const dataToSave = {
-          player_email: String(currentUser.email),
-          player_name: cleanName,
-          score: Number(score),
-          max_combo: Number(maxCombo),
-          total_slaps: Number(totalSlaps),
-          mode: String(mode),
-        };
+          const dataToSave = {
+            player_email: String(currentUser.email),
+            player_name: String(cleanName),
+            score: Number(score || 0),
+            max_combo: Number(maxCombo || 0),
+            total_slaps: Number(totalSlaps || 0),
+            mode: String(mode || "slap"),
+          };
 
-        base44.entities.HighScore.create(dataToSave)
-        .then(() => {
+          base44.entities.HighScore.create(dataToSave)
+            .then(() => {
+              toast({
+                title: "Σκορ Αποθηκεύτηκε!",
+                description: `${cleanName}: ${score} πόντοι`,
+              });
+            })
+            .catch(err => {
+              console.error("Score save failed:", err);
+            });
+        } else if (gameState === "over") {
+          // Guest mode or missing user info
           toast({
-            title: "Σκορ Αποθηκεύτηκε!",
-            description: `${cleanName}: ${score} πόντοι`,
+            title: "Τέλος Παιχνιδιού!",
+            description: "Συνδέσου για να μπει το σκορ σου στο Leaderboard!",
           });
-        })
-        .catch(err => {
-          console.error("Score save failed:", err);
-          const errorMsg = err.message || (typeof err === 'string' ? err : "Άγνωστο σφάλμα");
-          toast({
-            variant: "destructive",
-            title: "Σφάλμα Leaderboard",
-            description: `Λεπτομέρειες: ${errorMsg}`,
-          });
-        });
-      } else {
-        // Guest mode - explain why score isn't saved
-        toast({
-          title: "Είσαι σε Guest Mode",
-          description: "Συνδέσου για να καταγραφεί το σκορ σου στο Leaderboard!",
-        });
+        }
+      } catch (e) {
+        console.error("GameOver effect crash:", e);
       }
     }
-  }, [gameState]);
+  }, [gameState, currentUser, nickname, score, maxCombo, totalSlaps, mode]);
 
   const handleSlap = useCallback(() => {
     if (gameState !== "playing") return;
