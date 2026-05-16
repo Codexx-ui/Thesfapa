@@ -36,7 +36,7 @@ export default function SplashScreen({ onStart }) {
             ΦΑΠΑ <span className="text-primary">ΞΑΠΛΑ</span>
           </h1>
           <p className="font-display text-primary text-xl md:text-2xl tracking-[0.2em] font-bold">
-            ✨ ΠΥΡΓΟΣ EDITION ✨
+            ✨ THE SLAP GAME ✨
           </p>
         </motion.div>
 

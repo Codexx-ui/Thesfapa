@@ -129,10 +129,10 @@ export default function Game() {
           className="text-center"
         >
           <h1 className="font-display text-5xl md:text-6xl text-foreground tracking-tight">
-            Φάπα - Ξάπλα
+            The Slap Game
           </h1>
-          <p className="font-display text-secondary text-lg mt-1 tracking-wide drop-shadow-sm">
-            ✨ Πύργος Edition ✨
+          <p className="font-display text-secondary text-lg mt-1 tracking-wide drop-shadow-sm uppercase">
+            Φάπα - Ξάπλα
           </p>
         </motion.div>
 
