@@ -238,9 +238,9 @@ export default function Game() {
             variant="ghost"
             size="icon"
             onClick={() => setIsSettingsOpen(true)}
-            className="absolute top-4 right-4 rounded-full bg-card/40 backdrop-blur-md shadow-lg border border-border/50 hover:bg-card/60 transition-all active:scale-90"
+            className="absolute top-6 right-6 w-14 h-14 rounded-full bg-card/60 backdrop-blur-xl shadow-2xl border-2 border-primary/20 hover:bg-card/80 hover:border-primary/40 transition-all active:scale-90 z-50"
           >
-            <Settings className="w-6 h-6 text-foreground" />
+            <Settings className="w-8 h-8 text-primary animate-spin-slow" />
           </Button>
         )}
 

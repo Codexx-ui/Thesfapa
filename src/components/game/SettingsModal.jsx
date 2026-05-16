@@ -26,19 +26,19 @@ export default function SettingsModal({
   return (
     <AnimatePresence>
       {isOpen && (
-        <>
+        <div className="fixed inset-0 flex items-center justify-center p-4 z-[100]">
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
-            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[60]"
+            className="absolute inset-0 bg-black/80 backdrop-blur-md"
           />
           <motion.div
-            initial={{ opacity: 0, scale: 0.9, y: 20 }}
+            initial={{ opacity: 0, scale: 0.95, y: 30 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.9, y: 20 }}
-            className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[90%] max-w-md max-h-[85vh] overflow-y-auto bg-card border border-border p-6 rounded-3xl shadow-2xl z-[70]"
+            exit={{ opacity: 0, scale: 0.95, y: 30 }}
+            className="relative w-full max-w-lg max-h-[90vh] overflow-y-auto bg-card border-2 border-primary/20 p-8 rounded-[2.5rem] shadow-[0_0_50px_rgba(0,0,0,0.5)] custom-scrollbar"
           >
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-2xl font-display text-foreground flex items-center gap-2 uppercase tracking-tight">
