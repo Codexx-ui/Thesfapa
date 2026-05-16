@@ -1,6 +1,7 @@
 import React, { useState, useCallback, useRef } from "react";
 import { motion } from "framer-motion";
 import { playHitSound } from "@/lib/soundEffects";
+import { cn } from "@/lib/utils";
 
 const FACE_IMAGE = "https://media.base44.com/images/public/6a02d2983989447500838a5e/15c2a163e_tar.jpeg";
 const GUN_IMAGE = "https://img.icons8.com/color/512/gun.png";
