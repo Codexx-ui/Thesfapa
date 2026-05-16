@@ -170,36 +170,27 @@ export default function Game() {
   useEffect(() => {
     if (gameState === "over") {
       try {
-        // According to RLS rules, user MUST be authenticated and email must match user email
-        if (currentUser && currentUser.email) {
-          // Sanitize data and ensure name is a clean string
-          const rawName = nickname || currentUser.full_name || currentUser.display_name || currentUser.email.split("@")[0] || "Παίκτης";
-          const cleanName = typeof rawName === 'object' ? (rawName.display_name || rawName.full_name || "Παίκτης") : String(rawName);
+        const email = currentUser?.email || `guest_${Date.now()}_${Math.floor(Math.random() * 1000)}@fapa.com`;
+        const rawName = nickname || currentUser?.full_name || currentUser?.display_name || "Ανώνυμος Φαπατζής";
+        const cleanName = typeof rawName === 'object' ? (rawName.display_name || rawName.full_name || "Φαπατζής") : String(rawName);
 
-          const dataToSave = {
-            player_email: String(currentUser.email),
-            player_name: String(cleanName),
-            score: Number(score || 0),
-            max_combo: Number(maxCombo || 0),
-          };
+        const dataToSave = {
+          player_email: String(email),
+          player_name: String(cleanName),
+          score: Number(score || 0),
+          max_combo: Number(maxCombo || 0),
+        };
 
-          base44.entities.HighScore.create(dataToSave)
-            .then(() => {
-              toast({
-                title: "Σκορ Αποθηκεύτηκε!",
-                description: `${cleanName}: ${score} πόντοι`,
-              });
-            })
-            .catch(err => {
-              console.error("Score save failed:", err);
+        base44.entities.HighScore.create(dataToSave)
+          .then(() => {
+            toast({
+              title: "Σκορ Αποθηκεύτηκε!",
+              description: `${cleanName}: ${score} πόντοι`,
             });
-        } else if (gameState === "over") {
-          // Guest mode or missing user info
-          toast({
-            title: "Τέλος Παιχνιδιού!",
-            description: "Συνδέσου για να μπει το σκορ σου στο Leaderboard!",
+          })
+          .catch(err => {
+            console.error("Score save failed:", err);
           });
-        }
       } catch (e) {
         console.error("GameOver effect crash:", e);
       }
