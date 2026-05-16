@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { playHitSound } from "@/lib/soundEffects";
 
 const FACE_IMAGE = "https://media.base44.com/images/public/6a02d2983989447500838a5e/15c2a163e_tar.jpeg";
+const GUN_IMAGE = "https://pngimg.com/uploads/pistol/pistol_PNG2910.png";
 
 const SLAP_EMOJIS = ["💥", "👋", "💫", "⭐", "🔥"];
 const PUNCH_EMOJIS = ["💥", "👊", "💢", "⚡", "🔥"];
@@ -57,9 +58,18 @@ function FPSWeapon({ mode, fireKey }) {
       animate={anim}
       transition={{ duration: dur }}
     >
-      <div style={{ fontSize: "7rem", lineHeight: 1, transform: flip, filter: "drop-shadow(0 -4px 16px rgba(0,0,0,0.4))" }}>
-        {emoji}
-      </div>
+      {mode === "gun" ? (
+        <img
+          src={GUN_IMAGE}
+          alt="gun"
+          className="w-56 h-auto drop-shadow-2xl"
+          style={{ transform: "scaleX(-1) rotate(-15deg)" }}
+        />
+      ) : (
+        <div style={{ fontSize: "7rem", lineHeight: 1, transform: flip, filter: "drop-shadow(0 -4px 16px rgba(0,0,0,0.4))" }}>
+          {emoji}
+        </div>
+      )}
     </motion.div>
   );
 }
