@@ -22,6 +22,7 @@ export default function Leaderboard({ currentUserEmail }) {
       })
       .then((data) => {
         if (data) {
+          // Sort and ensure we have unique IDs for React keys
           const sorted = [...data].sort((a, b) => (b.score || 0) - (a.score || 0));
           setScores(sorted.slice(0, 20));
         }
@@ -80,19 +81,24 @@ export default function Leaderboard({ currentUserEmail }) {
             >
               <div className="flex items-center justify-center w-5">{getRankIcon(i)}</div>
               <div className="flex-1 min-w-0">
-                <span className="font-display text-sm font-medium text-foreground">
-                  {(() => {
-                    const name = typeof s.player_name === 'object' 
-                      ? (s.player_name?.display_name || s.player_name?.full_name || "Anonymous") 
-                      : String(s.player_name || "");
-                    
-                    if (!name || name === "[object Object]") {
-                      return s.player_email?.split("@")[0] || "Anonymous";
-                    }
-                    return name;
-                  })()}
-                  {isMe && <span className="text-[10px] text-primary ml-1">(Εσύ)</span>}
-                </span>
+                <div className="flex flex-col">
+                  <span className="font-display text-sm font-medium text-foreground">
+                    {(() => {
+                      const name = typeof s.player_name === 'object' 
+                        ? (s.player_name?.display_name || s.player_name?.full_name || "Anonymous") 
+                        : String(s.player_name || "");
+                      
+                      if (!name || name === "[object Object]") {
+                        return s.player_email?.split("@")[0] || "Anonymous";
+                      }
+                      return name;
+                    })()}
+                    {isMe && <span className="text-[10px] text-primary ml-1">(Εσύ)</span>}
+                  </span>
+                  <span className="text-[9px] text-muted-foreground opacity-70 uppercase tracking-tighter">
+                    {s.player_email?.replace(/(.{2})(.*)(@.*)/, "$1***$3")} • {s.created_at ? new Date(s.created_at).toLocaleTimeString() : "Now"}
+                  </span>
+                </div>
               </div>
               <div className="flex items-center gap-2">
                 {s.mode && <span className="text-sm">{MODE_EMOJI[s.mode]}</span>}
