@@ -74,7 +74,7 @@ function FPSWeapon({ mode, fireKey }) {
   );
 }
 
-export default function SlapTarget({ onSlap, disabled, mode, targetImage }) {
+export default function SlapTarget({ onSlap, disabled, mode, targetImage, combo = 0, isNightMode = false }) {
   const [floaters, setFloaters]     = useState([]);
   const [slapEffect, setSlapEffect] = useState(null);
   const [redFlash, setRedFlash]     = useState(0);   // counter → key for CSS anim
@@ -87,6 +87,8 @@ export default function SlapTarget({ onSlap, disabled, mode, targetImage }) {
   const [bruiseOpacity, setBruiseOpacity] = useState(0);
   const [shakeKey, setShakeKey]     = useState(0);   // retrigger CSS class
   const [bulletHoles, setBulletHoles] = useState([]); // persistent gun marks
+  
+  const comboIntensity = Math.min(1, combo / 30); // 0 to 1 scale based on combo intensity
 
   const hitCountRef = useRef(0);
   const EMOJIS = mode === "punch" ? PUNCH_EMOJIS : mode === "gun" ? GUN_EMOJIS : SLAP_EMOJIS;
@@ -146,10 +148,28 @@ export default function SlapTarget({ onSlap, disabled, mode, targetImage }) {
     setTimeout(() => setFloaters((prev) => prev.filter((f) => f.id !== fid)), 800);
 
     onSlap();
-  }, [disabled, onSlap, mode, EMOJIS]);
+  }, [disabled, onSlap, mode, EMOJIS, combo]);
 
   return (
-    <div className="relative flex items-center justify-center select-none">
+    <div className={cn(
+      "relative flex items-center justify-center select-none transition-colors duration-500",
+      isNightMode ? "bg-black/20 rounded-full p-8" : ""
+    )}>
+      {/* Combo Intensity Glow */}
+      {combo > 5 && (
+        <motion.div
+          animate={{
+            scale: [1, 1.2, 1],
+            opacity: [0.3, 0.6, 0.3],
+          }}
+          transition={{ duration: 1 / (1 + comboIntensity * 2), repeat: Infinity }}
+          className="absolute inset-0 rounded-full blur-3xl pointer-events-none"
+          style={{
+            background: `radial-gradient(circle, ${isNightMode ? '#7c3aed' : '#ff2a55'} 0%, transparent 70%)`,
+            transform: `scale(${1 + comboIntensity * 0.5})`
+          }}
+        />
+      )}
       {/* Floating emoji effects */}
       {floaters.map((f) => (
         <motion.div
@@ -235,9 +255,13 @@ export default function SlapTarget({ onSlap, disabled, mode, targetImage }) {
       {/* Ring glow */}
       <motion.div
         className="absolute w-52 h-52 rounded-full pointer-events-none"
-        style={{ background: "radial-gradient(circle, hsl(350, 80%, 55%, 0.15) 0%, transparent 70%)" }}
-        animate={{ scale: [1, 1.15, 1] }}
-        transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+        style={{
+          background: isNightMode
+            ? "radial-gradient(circle, rgba(124, 58, 237, 0.2) 0%, transparent 70%)"
+            : "radial-gradient(circle, hsl(350, 80%, 55%, 0.15) 0%, transparent 70%)"
+        }}
+        animate={{ scale: [1, 1.15 + comboIntensity * 0.3, 1] }}
+        transition={{ duration: 2 / (1 + comboIntensity), repeat: Infinity, ease: "easeInOut" }}
       />
 
       {/* Target face — shake via CSS, no framer-motion on this wrapper */}

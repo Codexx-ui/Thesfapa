@@ -1,7 +1,7 @@
 import React, { useState, useCallback, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { Hand, Play } from "lucide-react";
+import { Hand, Play, Moon, Sun } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { base44 } from "@/api/base44Client";
 import SlapTarget from "../components/game/SlapTarget";
@@ -42,6 +42,7 @@ export default function Game() {
   const [gameState, setGameState] = useState("intro"); // intro | idle | playing | over
   const [character, setCharacter] = useState(CHARACTERS[0]);
   const [mode, setMode] = useState("slap"); // slap | punch | gun
+  const [isNightMode, setIsNightMode] = useState(false);
   const [score, setScore] = useState(0);
   const [combo, setCombo] = useState(0);
   const [maxCombo, setMaxCombo] = useState(0);
@@ -140,11 +141,17 @@ export default function Game() {
 
       <BackgroundMusic autoStart={gameState !== "intro"} />
 
-      <div className="fixed inset-0 pointer-events-none opacity-40">
+      <div className={cn(
+        "fixed inset-0 pointer-events-none transition-opacity duration-1000",
+        isNightMode ? "opacity-10 bg-black" : "opacity-40"
+      )}>
         <img
           src={character.bg}
           alt="bg"
-          className="w-full h-full object-cover grayscale-[0.2]"
+          className={cn(
+            "w-full h-full object-cover transition-all duration-1000",
+            isNightMode ? "grayscale brightness-50" : "grayscale-[0.2]"
+          )}
         />
       </div>
 
@@ -287,6 +294,8 @@ export default function Game() {
                 disabled={gameState !== "playing"}
                 mode={mode}
                 targetImage={character.image}
+                combo={combo}
+                isNightMode={isNightMode}
               />
 
               {/* In-game weapon switcher */}
@@ -314,6 +323,16 @@ export default function Game() {
               >
                 {mode === "punch" ? "👊 Χτύπα τον στο πρόσωπο!" : mode === "gun" ? "🔫 Ρίξ' του μερικές!" : "👋 Χτύπα τον στο πρόσωπο!"}
               </motion.p>
+              
+              {/* Night Mode Toggle */}
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setIsNightMode(!isNightMode)}
+                className="mt-4 rounded-full bg-card/40 backdrop-blur hover:bg-card/60"
+              >
+                {isNightMode ? <Sun className="w-5 h-5 text-yellow-400" /> : <Moon className="w-5 h-5 text-indigo-400" />}
+              </Button>
             </motion.div>
           )}
         </AnimatePresence>
