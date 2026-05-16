@@ -75,7 +75,7 @@ function FPSWeapon({ mode, fireKey }) {
   );
 }
 
-export default function SlapTarget({ onSlap, disabled, mode, targetImage, combo = 0, isNightMode = false }) {
+export default function SlapTarget({ onSlap, disabled, mode, targetImage, combo = 0, isNightMode = false, volume = 0.5, isHighQuality = true }) {
   const [floaters, setFloaters]     = useState([]);
   const [slapEffect, setSlapEffect] = useState(null);
   const [redFlash, setRedFlash]     = useState(0);   // counter → key for CSS anim
