@@ -14,7 +14,62 @@ import SettingsModal from "../components/game/SettingsModal";
 import { Settings } from "lucide-react";
 
 const GAME_DURATION = 15;
-const COMBO_WINDOW = 700;
+const DIFFICULTY_SETTINGS = {
+  easy: { window: 1200, label: { el: "Εύκολο", en: "Easy" } },
+  medium: { window: 700, label: { el: "Μέτριο", en: "Medium" } },
+  hard: { window: 400, label: { el: "Δύσκολο", en: "Hard" } }
+};
+
+const TRANSLATIONS = {
+  el: {
+    settings: "Ρυθμίσεις",
+    character: "Επιλογή Στόχου",
+    theme: "Θέμα Εμφάνισης",
+    difficulty: "Δυσκολία",
+    language: "Γλώσσα",
+    audio: "Ένταση Ήχου",
+    quality: "Ποιότητα Γραφικών",
+    apply: "Εφαρμογή",
+    high: "Υψηλή",
+    low: "Χαμηλή",
+    play: "ΠΑΙΞΕ ΤΩΡΑ",
+    continue: "Συνέχεια",
+    points: "Πόντοι",
+    slaps: "Χαστούκια",
+    max_combo: "Max Combo",
+    game_over: "ΤΕΛΟΣ ΠΑΙΧΝΙΔΙΟΥ",
+    restart: "Ξαναπαίξε",
+    instructions: {
+      slap: "👋 Χτύπα τον στο πρόσωπο!",
+      punch: "👊 Χτύπα τον στο πρόσωπο!",
+      gun: "🔫 Ρίξ' του μερικές!"
+    }
+  },
+  en: {
+    settings: "Settings",
+    character: "Choose Target",
+    theme: "Visual Theme",
+    difficulty: "Difficulty",
+    language: "Language",
+    audio: "Audio Volume",
+    quality: "Graphics Quality",
+    apply: "Apply",
+    high: "High",
+    low: "Low",
+    play: "PLAY NOW",
+    continue: "Continue",
+    points: "Points",
+    slaps: "Slaps",
+    max_combo: "Max Combo",
+    game_over: "GAME OVER",
+    restart: "Play Again",
+    instructions: {
+      slap: "👋 Slap him in the face!",
+      punch: "👊 Punch him!",
+      gun: "🔫 Shoot him!"
+    }
+  }
+};
 
 const CHARACTERS = [
   {
@@ -46,6 +101,16 @@ export default function Game() {
   const [mode, setMode] = useState("slap"); // slap | punch | gun
   const [isNightMode, setIsNightMode] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  
+  // New Settings
+  const [volume, setVolume] = useState(0.5);
+  const [difficulty, setDifficulty] = useState("medium");
+  const [language, setLanguage] = useState("el");
+  const [isHighQuality, setIsHighQuality] = useState(true);
+
+  const t = TRANSLATIONS[language];
+  const comboWindow = DIFFICULTY_SETTINGS[difficulty].window;
+
   const [score, setScore] = useState(0);
   const [combo, setCombo] = useState(0);
   const [maxCombo, setMaxCombo] = useState(0);
@@ -107,7 +172,7 @@ export default function Game() {
 
     setTotalSlaps((prev) => prev + 1);
 
-    if (timeSinceLastSlap < COMBO_WINDOW && lastSlapTime.current > 0) {
+    if (timeSinceLastSlap < comboWindow && lastSlapTime.current > 0) {
       setCombo((prev) => {
         const newCombo = prev + 1;
         setMaxCombo((mc) => Math.max(mc, newCombo));
@@ -120,7 +185,7 @@ export default function Game() {
     }
 
     lastSlapTime.current = now;
-  }, []);
+  }, [comboWindow]);
 
   return (
     <div className="min-h-screen bg-background flex flex-col items-center justify-center p-4 overflow-hidden relative">
@@ -161,7 +226,7 @@ export default function Game() {
       <div className="relative z-10 flex flex-col items-center gap-8 w-full max-w-md">
         <AnimatePresence>
           {gameState === "intro" && (
-            <SplashScreen onStart={() => setGameState("idle")} />
+            <SplashScreen onStart={() => setGameState("idle")} translations={t} />
           )}
         </AnimatePresence>
 
@@ -257,7 +322,7 @@ export default function Game() {
                 className="font-display text-xl h-16 px-12 rounded-2xl bg-primary hover:bg-primary/90 text-primary-foreground shadow-xl shadow-primary/25 transition-all hover:shadow-2xl hover:shadow-primary/30"
               >
                 <Play className="w-6 h-6 mr-2" />
-                START
+                {t.play}
               </Button>
 
               <div className="bg-card rounded-2xl p-4 shadow-lg border border-border max-w-xs text-center">
@@ -295,6 +360,8 @@ export default function Game() {
                 targetImage={character.image}
                 combo={combo}
                 isNightMode={isNightMode}
+                volume={volume}
+                isHighQuality={isHighQuality}
               />
 
               {/* In-game weapon switcher */}
@@ -320,7 +387,7 @@ export default function Game() {
                 transition={{ duration: 1.5, repeat: Infinity }}
                 className="font-body text-sm text-muted-foreground"
               >
-                {mode === "punch" ? "👊 Χτύπα τον στο πρόσωπο!" : mode === "gun" ? "🔫 Ρίξ' του μερικές!" : "👋 Χτύπα τον στο πρόσωπο!"}
+                {mode === "punch" ? t.instructions.punch : mode === "gun" ? t.instructions.gun : t.instructions.slap}
               </motion.p>
             </motion.div>
           )}
@@ -334,6 +401,17 @@ export default function Game() {
           onSelectCharacter={setCharacter}
           isNightMode={isNightMode}
           onToggleNightMode={setIsNightMode}
+          
+          volume={volume}
+          onVolumeChange={setVolume}
+          difficulty={difficulty}
+          onDifficultyChange={setDifficulty}
+          difficultySettings={DIFFICULTY_SETTINGS}
+          language={language}
+          onLanguageChange={setLanguage}
+          isHighQuality={isHighQuality}
+          onToggleQuality={setIsHighQuality}
+          translations={t}
         />
 
         {/* Game Over */}

@@ -14,9 +14,13 @@ function resume() {
 }
 
 // A rough "voice" using oscillators + noise + filters
-function cartoonYell(pitch = 200, duration = 0.35, type = "slap") {
+function cartoonYell(pitch = 200, duration = 0.35, type = "slap", volume = 0.5) {
   const ctx = resume();
   const now = ctx.currentTime;
+
+  const masterGain = ctx.createGain();
+  masterGain.gain.setValueAtTime(volume, now);
+  masterGain.connect(ctx.destination);
 
   // Main oscillator (voice-like)
   const osc = ctx.createOscillator();
@@ -38,7 +42,7 @@ function cartoonYell(pitch = 200, duration = 0.35, type = "slap") {
 
   osc.connect(filter);
   filter.connect(gainNode);
-  gainNode.connect(ctx.destination);
+  gainNode.connect(masterGain);
 
   osc.start(now);
   osc.stop(now + duration);
@@ -53,7 +57,7 @@ function cartoonYell(pitch = 200, duration = 0.35, type = "slap") {
   gain2.gain.linearRampToValueAtTime(0.15, now + 0.015);
   gain2.gain.exponentialRampToValueAtTime(0.001, now + duration * 0.7);
   osc2.connect(gain2);
-  gain2.connect(ctx.destination);
+  gain2.connect(masterGain);
   osc2.start(now);
   osc2.stop(now + duration);
 
@@ -72,28 +76,28 @@ function cartoonYell(pitch = 200, duration = 0.35, type = "slap") {
   noiseGain.gain.exponentialRampToValueAtTime(0.001, now + 0.08);
   noise.connect(noiseFilter);
   noiseFilter.connect(noiseGain);
-  noiseGain.connect(ctx.destination);
+  noiseGain.connect(masterGain);
   noise.start(now);
 }
 
 const SLAP_SOUNDS = [
-  () => cartoonYell(220, 0.4, "slap"),   // "AGHH"
-  () => cartoonYell(180, 0.5, "slap"),   // "OUGGH"
-  () => cartoonYell(260, 0.3, "slap"),   // "GRAPP"
-  () => cartoonYell(150, 0.55, "slap"),  // low grunt
-  () => cartoonYell(300, 0.25, "slap"),  // high yelp
+  (vol) => cartoonYell(220, 0.4, "slap", vol),
+  (vol) => cartoonYell(180, 0.5, "slap", vol),
+  (vol) => cartoonYell(260, 0.3, "slap", vol),
+  (vol) => cartoonYell(150, 0.55, "slap", vol),
+  (vol) => cartoonYell(300, 0.25, "slap", vol),
 ];
 
 const PUNCH_SOUNDS = [
-  () => cartoonYell(160, 0.45, "punch"),  // deep "OOF"
-  () => cartoonYell(130, 0.6, "punch"),   // "UGGHH"
-  () => cartoonYell(200, 0.35, "punch"),  // "BOOF"
-  () => cartoonYell(110, 0.7, "punch"),   // very deep grunt
-  () => cartoonYell(240, 0.3, "punch"),   // sharp crack
+  (vol) => cartoonYell(160, 0.45, "punch", vol),
+  (vol) => cartoonYell(130, 0.6, "punch", vol),
+  (vol) => cartoonYell(200, 0.35, "punch", vol),
+  (vol) => cartoonYell(110, 0.7, "punch", vol),
+  (vol) => cartoonYell(240, 0.3, "punch", vol),
 ];
 
-export function playHitSound(mode = "slap") {
+export function playHitSound(mode = "slap", volume = 0.5) {
   const sounds = mode === "punch" ? PUNCH_SOUNDS : SLAP_SOUNDS;
   const fn = sounds[Math.floor(Math.random() * sounds.length)];
-  fn();
+  fn(volume);
 }

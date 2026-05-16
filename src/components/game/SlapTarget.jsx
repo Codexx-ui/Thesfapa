@@ -119,14 +119,14 @@ export default function SlapTarget({ onSlap, disabled, mode, targetImage, combo 
       // Add persistent bullet hole
       const holeX = Math.random() * 60 + 20; // range 20-80%
       const holeY = Math.random() * 60 + 20; // range 20-80%
-      setBulletHoles((prev) => [...prev.slice(-15), { x: holeX, y: holeY, id: Date.now() }]);
+      setBulletHoles((prev) => [...prev.slice(isHighQuality ? -20 : -5), { x: holeX, y: holeY, id: Date.now() }]);
     } else {
       const side = x > 0 ? "right" : "left";
       setHandAnim({ id: Date.now(), side, mode });
       setTimeout(() => setHandAnim(null), 500);
     }
 
-    playHitSound(mode);
+    playHitSound(mode, volume);
 
     // Shake via CSS class retrigger
     setShakeKey((n) => n + 1);
@@ -156,8 +156,8 @@ export default function SlapTarget({ onSlap, disabled, mode, targetImage, combo 
       "relative flex items-center justify-center select-none transition-colors duration-500",
       isNightMode ? "bg-black/20 rounded-full p-8" : ""
     )}>
-      {/* Combo Intensity Glow */}
-      {combo > 5 && (
+      {/* Combo Intensity Glow - Only if high quality */}
+      {isHighQuality && combo > 5 && (
         <motion.div
           animate={{
             scale: [1, 1.2, 1],

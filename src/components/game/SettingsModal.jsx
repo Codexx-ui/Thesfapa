@@ -11,7 +11,17 @@ export default function SettingsModal({
   selectedCharacter, 
   onSelectCharacter, 
   isNightMode, 
-  onToggleNightMode 
+  onToggleNightMode,
+  volume,
+  onVolumeChange,
+  difficulty,
+  onDifficultyChange,
+  difficultySettings,
+  language,
+  onLanguageChange,
+  isHighQuality,
+  onToggleQuality,
+  translations: t
 }) {
   return (
     <AnimatePresence>
@@ -28,42 +38,64 @@ export default function SettingsModal({
             initial={{ opacity: 0, scale: 0.9, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.9, y: 20 }}
-            className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[90%] max-w-md bg-card border border-border p-6 rounded-3xl shadow-2xl z-[70]"
+            className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[90%] max-w-md max-h-[85vh] overflow-y-auto bg-card border border-border p-6 rounded-3xl shadow-2xl z-[70]"
           >
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-2xl font-display text-foreground flex items-center gap-2">
+              <h2 className="text-2xl font-display text-foreground flex items-center gap-2 uppercase tracking-tight">
                 <Palette className="w-6 h-6 text-primary" />
-                Ρυθμίσεις
+                {t.settings}
               </h2>
               <Button variant="ghost" size="icon" onClick={onClose} className="rounded-full">
                 <X className="w-5 h-5" />
               </Button>
             </div>
 
-            <div className="space-y-8">
+            <div className="space-y-6">
+              {/* Language Selection */}
+              <section>
+                <h3 className="text-xs font-bold text-muted-foreground mb-3 flex items-center gap-2 uppercase tracking-widest">
+                  <Palette className="w-3 h-3" />
+                  {t.language}
+                </h3>
+                <div className="flex gap-2">
+                  {[["el", "Ελληνικά"], ["en", "English"]].map(([code, name]) => (
+                    <button
+                      key={code}
+                      onClick={() => onLanguageChange(code)}
+                      className={cn(
+                        "flex-1 py-2 rounded-xl border-2 transition-all text-sm font-medium",
+                        language === code ? "border-primary bg-primary/10 text-primary" : "border-border text-muted-foreground"
+                      )}
+                    >
+                      {name}
+                    </button>
+                  ))}
+                </div>
+              </section>
+
               {/* Character Selection */}
               <section>
-                <h3 className="text-sm font-medium text-muted-foreground mb-4 flex items-center gap-2 uppercase tracking-wider">
-                  <Users className="w-4 h-4" />
-                  Επιλογή Στόχου
+                <h3 className="text-xs font-bold text-muted-foreground mb-3 flex items-center gap-2 uppercase tracking-widest">
+                  <Users className="w-3 h-3" />
+                  {t.character}
                 </h3>
-                <div className="grid grid-cols-3 gap-4">
+                <div className="grid grid-cols-3 gap-3">
                   {characters.map((c) => (
                     <button
                       key={c.id}
                       onClick={() => onSelectCharacter(c)}
                       className={cn(
-                        "group relative flex flex-col items-center gap-2 p-2 rounded-2xl transition-all border-2",
+                        "group relative flex flex-col items-center gap-2 p-2 rounded-xl transition-all border-2",
                         selectedCharacter.id === c.id 
-                          ? "border-primary bg-primary/5 scale-105 shadow-lg" 
+                          ? "border-primary bg-primary/5 scale-105 shadow-sm" 
                           : "border-transparent hover:bg-accent/50"
                       )}
                     >
-                      <div className="relative w-16 h-16 rounded-full overflow-hidden border-2 border-border group-hover:border-primary/50 transition-colors">
+                      <div className="relative w-12 h-12 rounded-full overflow-hidden border-2 border-border group-hover:border-primary/50 transition-colors">
                         <img src={c.image} alt={c.name} className="w-full h-full object-cover" />
                       </div>
                       <span className={cn(
-                        "text-xs font-medium truncate w-full text-center",
+                        "text-[10px] font-bold truncate w-full text-center uppercase",
                         selectedCharacter.id === c.id ? "text-primary" : "text-muted-foreground"
                       )}>
                         {c.name}
@@ -73,42 +105,84 @@ export default function SettingsModal({
                 </div>
               </section>
 
-              {/* Theme Selection */}
+              {/* Audio Volume */}
               <section>
-                <h3 className="text-sm font-medium text-muted-foreground mb-4 flex items-center gap-2 uppercase tracking-wider">
-                  {isNightMode ? <Moon className="w-4 h-4" /> : <Sun className="w-4 h-4" />}
-                  Θέμα Εμφάνισης
+                <h3 className="text-xs font-bold text-muted-foreground mb-3 flex items-center gap-2 uppercase tracking-widest">
+                  <Sun className="w-3 h-3" />
+                  {t.audio}
                 </h3>
-                <div className="flex gap-4">
-                  <button
-                    onClick={() => onToggleNightMode(false)}
-                    className={cn(
-                      "flex-1 flex items-center justify-center gap-2 p-4 rounded-2xl border-2 transition-all",
-                      !isNightMode ? "border-primary bg-primary/5 shadow-md" : "border-border hover:bg-accent"
-                    )}
-                  >
-                    <Sun className={cn("w-5 h-5", !isNightMode ? "text-primary" : "text-muted-foreground")} />
-                    <span className={cn("font-medium", !isNightMode ? "text-primary" : "text-muted-foreground")}>Day</span>
-                  </button>
-                  <button
-                    onClick={() => onToggleNightMode(true)}
-                    className={cn(
-                      "flex-1 flex items-center justify-center gap-2 p-4 rounded-2xl border-2 transition-all",
-                      isNightMode ? "border-primary bg-primary/10 shadow-md" : "border-border hover:bg-accent"
-                    )}
-                  >
-                    <Moon className={cn("w-5 h-5", isNightMode ? "text-primary" : "text-muted-foreground")} />
-                    <span className={cn("font-medium", isNightMode ? "text-primary" : "text-muted-foreground")}>Night</span>
-                  </button>
+                <input
+                  type="range"
+                  min="0"
+                  max="1"
+                  step="0.01"
+                  value={volume}
+                  onChange={(e) => onVolumeChange(parseFloat(e.target.value))}
+                  className="w-full accent-primary"
+                />
+              </section>
+
+              {/* Difficulty */}
+              <section>
+                <h3 className="text-xs font-bold text-muted-foreground mb-3 flex items-center gap-2 uppercase tracking-widest">
+                  <Palette className="w-3 h-3" />
+                  {t.difficulty}
+                </h3>
+                <div className="flex gap-2">
+                  {Object.entries(difficultySettings).map(([key, cfg]) => (
+                    <button
+                      key={key}
+                      onClick={() => onDifficultyChange(key)}
+                      className={cn(
+                        "flex-1 py-2 rounded-xl border-2 transition-all text-[10px] font-bold uppercase",
+                        difficulty === key ? "border-primary bg-primary/10 text-primary" : "border-border text-muted-foreground"
+                      )}
+                    >
+                      {cfg.label[language]}
+                    </button>
+                  ))}
                 </div>
               </section>
+
+              {/* Theme & Quality */}
+              <div className="grid grid-cols-2 gap-4">
+                <section>
+                  <h3 className="text-xs font-bold text-muted-foreground mb-3 uppercase tracking-widest">
+                    {t.theme}
+                  </h3>
+                  <button
+                    onClick={() => onToggleNightMode(!isNightMode)}
+                    className={cn(
+                      "w-full flex items-center justify-center gap-2 py-3 rounded-xl border-2 transition-all",
+                      isNightMode ? "border-primary bg-primary/10 text-primary" : "border-border text-muted-foreground"
+                    )}
+                  >
+                    {isNightMode ? <Moon className="w-4 h-4" /> : <Sun className="w-4 h-4" />}
+                    <span className="text-xs font-bold uppercase">{isNightMode ? "Night" : "Day"}</span>
+                  </button>
+                </section>
+                <section>
+                  <h3 className="text-xs font-bold text-muted-foreground mb-3 uppercase tracking-widest">
+                    {t.quality}
+                  </h3>
+                  <button
+                    onClick={() => onToggleQuality(!isHighQuality)}
+                    className={cn(
+                      "w-full flex items-center justify-center gap-2 py-3 rounded-xl border-2 transition-all",
+                      isHighQuality ? "border-primary bg-primary/10 text-primary" : "border-border text-muted-foreground"
+                    )}
+                  >
+                    <span className="text-xs font-bold uppercase">{isHighQuality ? t.high : t.low}</span>
+                  </button>
+                </section>
+              </div>
             </div>
 
             <Button 
               onClick={onClose}
-              className="w-full mt-8 h-12 rounded-2xl font-bold text-lg shadow-lg shadow-primary/20"
+              className="w-full mt-6 h-12 rounded-xl font-bold text-lg shadow-lg shadow-primary/20 uppercase tracking-widest"
             >
-              Εφαρμογή
+              {t.apply}
             </Button>
           </motion.div>
         </>
