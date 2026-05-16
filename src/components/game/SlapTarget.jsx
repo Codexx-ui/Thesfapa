@@ -104,8 +104,11 @@ export default function SlapTarget({ onSlap, disabled, mode, targetImage, combo 
     const x = e.clientX - rect.left - rect.width / 2;
 
     hitCountRef.current += 1;
-    setDamageLevel(Math.min(8, Math.floor(hitCountRef.current / 3)));
-    setBruiseOpacity(Math.min(0.5, hitCountRef.current * 0.015));
+    
+    if (mode === "gun") {
+      setDamageLevel(Math.min(8, Math.floor(hitCountRef.current / 3)));
+      setBruiseOpacity(Math.min(0.5, hitCountRef.current * 0.015));
+    }
 
     if (hitCountRef.current % 3 === 0) {
       const word = LERA_WORDS[Math.floor(Math.random() * LERA_WORDS.length)];
