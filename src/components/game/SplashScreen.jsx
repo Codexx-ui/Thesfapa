@@ -65,7 +65,9 @@ export default function SplashScreen({ onStart, translations: t }) {
             placeholder={t.enter_name}
             className="w-full h-11 px-5 rounded-xl bg-white/5 border border-white/10 text-white font-display text-base focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all placeholder:text-white/20"
             onChange={(e) => {
-              window.tempNickname = String(e.target.value);
+              const val = e.target.value;
+              window.tempNickname = val;
+              onStart(val, true); // Partial update to sync state
             }}
           />
         </motion.div>
@@ -76,7 +78,7 @@ export default function SplashScreen({ onStart, translations: t }) {
           transition={{ delay: 0.7, type: "spring" }}
         >
           <Button
-            onClick={() => onStart(window.tempNickname)}
+            onClick={() => onStart(window.tempNickname, false)}
             size="lg"
             className="group relative font-display text-xl h-16 px-12 rounded-full bg-primary hover:bg-primary/90 text-white shadow-[0_0_30px_rgba(255,42,85,0.4)] transition-all hover:scale-105 active:scale-95 w-full md:w-auto"
           >

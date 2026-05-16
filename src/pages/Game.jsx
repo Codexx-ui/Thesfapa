@@ -278,9 +278,9 @@ export default function Game() {
         <AnimatePresence>
           {gameState === "intro" && (
             <SplashScreen 
-              onStart={(name) => {
-                if (name) setNickname(name);
-                setGameState("idle");
+              onStart={(name, isPartial) => {
+                if (name) setNickname(String(name));
+                if (!isPartial) setGameState("idle");
               }} 
               translations={t} 
             />
