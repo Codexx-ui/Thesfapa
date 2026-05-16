@@ -209,6 +209,18 @@ export default function Game() {
 
       <BackgroundMusic autoStart={gameState !== "intro"} />
 
+      {/* Settings Toggle - Direct child of screen container for fixed positioning */}
+      {(gameState === "idle" || gameState === "over") && (
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={() => setIsSettingsOpen(true)}
+          className="fixed top-4 right-4 md:top-8 md:right-8 w-14 h-14 md:w-16 md:h-16 rounded-full bg-card/80 backdrop-blur-2xl shadow-[0_0_30px_rgba(0,0,0,0.2)] border-2 border-primary/30 hover:border-primary hover:bg-card transition-all active:scale-90 z-[100]"
+        >
+          <Settings className="w-8 h-8 md:w-9 md:h-9 text-primary animate-spin-slow" />
+        </Button>
+      )}
+
       <div className={cn(
         "fixed inset-0 pointer-events-none transition-opacity duration-1000",
         isNightMode ? "opacity-10 bg-black" : "opacity-40"
@@ -230,19 +242,9 @@ export default function Game() {
           )}
         </AnimatePresence>
 
-        {/* Character Selection (only in idle) - REPLACED BY SETTINGS MODAL */}
+        {/* Character Selection - REPLACED BY SETTINGS MODAL */}
         
-        {/* Settings Toggle (only in idle) */}
-        {gameState === "idle" && (
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => setIsSettingsOpen(true)}
-            className="absolute top-6 right-6 w-14 h-14 rounded-full bg-card/60 backdrop-blur-xl shadow-2xl border-2 border-primary/20 hover:bg-card/80 hover:border-primary/40 transition-all active:scale-90 z-50"
-          >
-            <Settings className="w-8 h-8 text-primary animate-spin-slow" />
-          </Button>
-        )}
+        {/* Title */}
 
         {/* Title */}
         <motion.div
