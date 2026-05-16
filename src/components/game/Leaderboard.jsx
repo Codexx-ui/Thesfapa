@@ -81,9 +81,16 @@ export default function Leaderboard({ currentUserEmail }) {
               <div className="flex items-center justify-center w-5">{getRankIcon(i)}</div>
               <div className="flex-1 min-w-0">
                 <span className="font-display text-sm font-medium text-foreground">
-                  {typeof s.player_name === 'object' 
-                    ? (s.player_name?.display_name || s.player_name?.full_name || "Anonymous") 
-                    : (String(s.player_name || s.player_email?.split("@")[0] || "Anonymous"))}
+                  {(() => {
+                    const name = typeof s.player_name === 'object' 
+                      ? (s.player_name?.display_name || s.player_name?.full_name || "Anonymous") 
+                      : String(s.player_name || "");
+                    
+                    if (!name || name === "[object Object]") {
+                      return s.player_email?.split("@")[0] || "Anonymous";
+                    }
+                    return name;
+                  })()}
                   {isMe && <span className="text-[10px] text-primary ml-1">(Εσύ)</span>}
                 </span>
               </div>

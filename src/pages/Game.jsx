@@ -173,15 +173,24 @@ export default function Game() {
   useEffect(() => {
     if (gameState === "over") {
       try {
-        const savedNickname = localStorage.getItem("slap_nickname") || nickname;
+        let savedNickname = localStorage.getItem("slap_nickname") || nickname;
+        
+        // Filter out broken strings
+        if (savedNickname === "[object Object]" || !savedNickname) {
+          savedNickname = "";
+          localStorage.removeItem("slap_nickname");
+        }
+
         const email = currentUser?.email || `guest_${Date.now()}_${Math.floor(Math.random() * 1000)}@fapa.com`;
         let rawName = savedNickname || (currentUser && (currentUser.full_name || currentUser.display_name)) || "Ανώνυμος Φαπατζής";
         
-        // Final safety net to ensure rawName is NOT an object
+        // Final safety net to ensure rawName is NOT an object and not the broken string
         if (typeof rawName === 'object' && rawName !== null) {
           rawName = rawName.display_name || rawName.full_name || "Φαπατζής";
         }
-        const cleanName = String(rawName);
+        
+        let cleanName = String(rawName);
+        if (cleanName === "[object Object]") cleanName = "Φαπατζής";
 
         const dataToSave = {
           player_email: String(email),
