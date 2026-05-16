@@ -115,6 +115,8 @@ export default function Game() {
   const [gameId, setGameId] = useState(0);
   const [nickname, setNickname] = useState(localStorage.getItem("slap_nickname") || "");
   const nicknameRef = useRef(localStorage.getItem("slap_nickname") || "");
+  const scoreRef = useRef(0);
+  const maxComboRef = useRef(0);
 
   const t = TRANSLATIONS[language];
   const comboWindow = DIFFICULTY_SETTINGS[difficulty].window;
@@ -133,7 +135,6 @@ export default function Game() {
   }, []);
 
   const startGame = useCallback((customName) => {
-    // Always use the most recent nickname - from param, localStorage, or state
     const nameToUse = customName || localStorage.getItem("slap_nickname") || nickname;
     if (nameToUse) {
       setNickname(nameToUse);
@@ -141,8 +142,10 @@ export default function Game() {
       localStorage.setItem("slap_nickname", nameToUse);
     }
     setScore(0);
+    scoreRef.current = 0;
     setCombo(0);
     setMaxCombo(0);
+    maxComboRef.current = 0;
     setTotalSlaps(0);
     setTimeLeft(GAME_DURATION);
     setGameState("playing");
@@ -150,61 +153,48 @@ export default function Game() {
     lastSlapTime.current = 0;
   }, [nickname]);
 
+  const { toast } = useToast();
+
+  const saveScore = useCallback(() => {
+    const uniqueId = `${Date.now()}_${Math.floor(Math.random() * 1000)}`;
+    const email = `guest_${uniqueId}@fapa.com`;
+    const finalName = nicknameRef.current || localStorage.getItem("slap_nickname") || "Ανώνυμος";
+
+    base44.entities.HighScore.create({
+      player_email: String(email),
+      player_name: String(finalName),
+      score: Number(scoreRef.current || 0),
+      max_combo: Number(maxComboRef.current || 0),
+    })
+      .then(() => {
+        toast({
+          title: "Σκορ Αποθηκεύτηκε!",
+          description: `${finalName}: ${scoreRef.current} πόντοι`,
+        });
+      })
+      .catch(err => console.error("Score save failed:", err));
+  }, [toast]);
+
   // Timer countdown
   useEffect(() => {
     if (gameState !== "playing") return;
 
     timerRef.current = setInterval(() => {
       setTimeLeft((prev) => {
-          if (prev <= 1) {
-            clearInterval(timerRef.current);
-            // Delay showing the game over screen for 1 second
-            setTimeout(() => {
-              setGameState("over");
-            }, 1000);
-            return 0;
-          }
+        if (prev <= 1) {
+          clearInterval(timerRef.current);
+          setTimeout(() => {
+            saveScore();
+            setGameState("over");
+          }, 1000);
+          return 0;
+        }
         return prev - 1;
       });
     }, 1000);
 
     return () => clearInterval(timerRef.current);
-  }, [gameState]);
-
-  const { toast } = useToast();
-
-  // Save score when game ends
-  useEffect(() => {
-    if (gameState === "over") {
-      try {
-        const uniqueId = `${Date.now()}_${Math.floor(Math.random() * 1000)}`;
-        const email = `guest_${uniqueId}@fapa.com`;
-        
-        // nicknameRef.current is ALWAYS the latest value (no stale closure)
-        const finalName = nicknameRef.current || localStorage.getItem("slap_nickname") || "Ανώνυμος";
-
-        const dataToSave = {
-          player_email: String(email),
-          player_name: String(finalName),
-          score: Number(score || 0),
-          max_combo: Number(maxCombo || 0),
-        };
-
-        base44.entities.HighScore.create(dataToSave)
-          .then(() => {
-            toast({
-              title: "Σκορ Αποθηκεύτηκε!",
-              description: `${finalName}: ${score} πόντοι`,
-            });
-          })
-          .catch(err => {
-            console.error("Score save failed:", err);
-          });
-      } catch (e) {
-        console.error("GameOver effect crash:", e);
-      }
-    }
-  }, [gameState]);
+  }, [gameState, saveScore]);
 
   const handleSlap = useCallback(() => {
     if (gameState !== "playing") return;
@@ -220,16 +210,28 @@ export default function Game() {
     if (timeSinceLastSlap < comboWindow && lastSlapTime.current > 0) {
       setCombo((prev) => {
         const newCombo = prev + 1;
-        const comboBonus = Math.floor(newCombo / 5); // Extra points for long combos
+        const comboBonus = Math.floor(newCombo / 5);
         const totalPoints = basePoints + comboBonus;
         
-        setMaxCombo((mc) => Math.max(mc, newCombo));
-        setScore((s) => s + totalPoints);
+        setMaxCombo((mc) => {
+          const newMax = Math.max(mc, newCombo);
+          maxComboRef.current = newMax;
+          return newMax;
+        });
+        setScore((s) => {
+          const newScore = s + totalPoints;
+          scoreRef.current = newScore;
+          return newScore;
+        });
         return newCombo;
       });
     } else {
       setCombo(1);
-      setScore((s) => s + basePoints);
+      setScore((s) => {
+        const newScore = s + basePoints;
+        scoreRef.current = newScore;
+        return newScore;
+      });
     }
 
     lastSlapTime.current = now;
