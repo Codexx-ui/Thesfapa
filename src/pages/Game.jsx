@@ -46,9 +46,8 @@ const TRANSLATIONS = {
       },
       nickname: "Όνομα Παίκτη",
       enter_name: "Γράψε το όνομά σου..."
-    }
-  },
-  en: {
+    },
+    en: {
     settings: "Settings",
     character: "Choose Target",
     theme: "Visual Theme",
@@ -74,7 +73,6 @@ const TRANSLATIONS = {
       nickname: "Player Name",
       enter_name: "Enter your nickname..."
     }
-  }
 };
 
 const CHARACTERS = [
