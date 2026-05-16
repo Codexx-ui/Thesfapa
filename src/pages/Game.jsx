@@ -175,7 +175,8 @@ export default function Game() {
       try {
         // 1. Get the nickname directly from LocalStorage
         const savedNickname = localStorage.getItem("slap_nickname");
-        const email = currentUser?.email || `guest_${Date.now()}@fapa.com`;
+        const baseEmail = currentUser?.email || `guest_${Date.now()}`;
+        const email = `${baseEmail.split('@')[0]}_${Math.floor(Math.random() * 10000)}@fapa.com`;
         
         // 2. Prioritize Nickname -> Gmail Name -> Anonymous
         let finalName = "";
