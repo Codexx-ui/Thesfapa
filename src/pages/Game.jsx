@@ -8,12 +8,14 @@ import SlapTarget from "../components/game/SlapTarget";
 import ScoreBoard from "../components/game/ScoreBoard";
 import GameOverModal from "../components/game/GameOverModal";
 import Leaderboard from "../components/game/Leaderboard";
+import SplashScreen from "../components/game/SplashScreen";
+import BackgroundMusic from "../components/game/BackgroundMusic";
 
 const GAME_DURATION = 15;
 const COMBO_WINDOW = 700;
 
 export default function Game() {
-  const [gameState, setGameState] = useState("idle"); // idle | playing | over
+  const [gameState, setGameState] = useState("intro"); // intro | idle | playing | over
   const [mode, setMode] = useState("slap"); // slap | punch | gun
   const [score, setScore] = useState(0);
   const [combo, setCombo] = useState(0);
@@ -111,7 +113,15 @@ export default function Game() {
         />
       </div>
 
+      <BackgroundMusic autoStart={gameState !== "intro"} />
+
       <div className="relative z-10 flex flex-col items-center gap-8 w-full max-w-md">
+        <AnimatePresence>
+          {gameState === "intro" && (
+            <SplashScreen onStart={() => setGameState("idle")} />
+          )}
+        </AnimatePresence>
+
         {/* Title */}
         <motion.div
           initial={{ y: -20, opacity: 0 }}
