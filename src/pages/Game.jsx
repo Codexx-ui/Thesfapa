@@ -97,7 +97,7 @@ const CHARACTERS = [
 
 export default function Game() {
   const [gameState, setGameState] = useState("intro"); // intro | idle | playing | over
-  const [character, setCharacter] = useState(CHARACTERS[0]);
+  const [character, setCharacter] = useState(CHARACTERS[2]);
   const [mode, setMode] = useState("slap"); // slap | punch | gun
   const [isNightMode, setIsNightMode] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
