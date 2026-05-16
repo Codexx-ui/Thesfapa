@@ -184,16 +184,22 @@ export default function Game() {
 
     setTotalSlaps((prev) => prev + 1);
 
+    const modeMultiplier = mode === "gun" ? 5 : mode === "punch" ? 2 : 1;
+    const basePoints = 1 * modeMultiplier;
+
     if (timeSinceLastSlap < comboWindow && lastSlapTime.current > 0) {
       setCombo((prev) => {
         const newCombo = prev + 1;
+        const comboBonus = Math.floor(newCombo / 5); // Extra points for long combos
+        const totalPoints = basePoints + comboBonus;
+        
         setMaxCombo((mc) => Math.max(mc, newCombo));
-        setScore((s) => s + Math.max(1, newCombo));
+        setScore((s) => s + totalPoints);
         return newCombo;
       });
     } else {
       setCombo(1);
-      setScore((s) => s + 1);
+      setScore((s) => s + basePoints);
     }
 
     lastSlapTime.current = now;
