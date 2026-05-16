@@ -169,43 +169,37 @@ export default function Game() {
   // Save score when game ends
   useEffect(() => {
     if (gameState === "over") {
-      const email = currentUser?.email || `guest_${Date.now()}@slapgame.com`;
-      const name = nickname || currentUser?.full_name || "Ανώνυμος Φαπατζής";
-      
-      // Simplified save to troubleshoot
-      base44.entities.highscore.create({
-        player_email: email,
-        player_name: name,
-        score: Number(score),
-      })
-      .then(() => {
-        toast({
-          title: "Σκορ Αποθηκεύτηκε!",
-          description: `${name}: ${score} πόντοι`,
-        });
-      })
-      .catch(err => {
-        console.error("Score save failed:", err);
-        // Try again with uppercase just in case
+      // According to RLS rules, user MUST be authenticated and email must match user email
+      if (currentUser) {
         base44.entities.HighScore.create({
-          player_email: email,
-          player_name: name,
+          player_email: currentUser.email,
+          player_name: nickname || currentUser.full_name || currentUser.email.split("@")[0],
           score: Number(score),
+          max_combo: Number(maxCombo),
+          total_slaps: Number(totalSlaps),
+          mode,
         })
         .then(() => {
-           toast({
+          toast({
             title: "Σκορ Αποθηκεύτηκε!",
-            description: `${name}: ${score} πόντοι`,
+            description: `${nickname || currentUser.full_name || "Εσύ"}: ${score} πόντοι`,
           });
         })
-        .catch(err2 => {
+        .catch(err => {
+          console.error("Score save failed:", err);
           toast({
             variant: "destructive",
-            title: "Αποτυχία Αποθήκευσης",
-            description: "Σφάλμα: " + (err2.message || "Πρόβλημα σύνδεσης"),
+            title: "Σφάλμα Leaderboard",
+            description: "Δεν μπορέσαμε να σώσουμε το σκορ σου.",
           });
         });
-      });
+      } else {
+        // Guest mode - explain why score isn't saved
+        toast({
+          title: "Είσαι σε Guest Mode",
+          description: "Συνδέσου για να καταγραφεί το σκορ σου στο Leaderboard!",
+        });
+      }
     }
   }, [gameState]);
 
