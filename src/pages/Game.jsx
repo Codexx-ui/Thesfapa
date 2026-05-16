@@ -210,8 +210,7 @@ export default function Game() {
 
     setTotalSlaps((prev) => prev + 1);
 
-    const modeMultiplier = mode === "gun" ? 5 : mode === "punch" ? 2 : 1;
-    const basePoints = 1 * modeMultiplier;
+    const basePoints = mode === "gun" ? 50 : mode === "punch" ? 20 : 10;
 
     if (timeSinceLastSlap < comboWindow && lastSlapTime.current > 0) {
       setCombo((prev) => {
