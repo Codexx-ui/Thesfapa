@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Play } from 'lucide-react';
 
-export default function SplashScreen({ onStart }) {
+export default function SplashScreen({ onStart, translations: t }) {
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -46,7 +46,9 @@ export default function SplashScreen({ onStart }) {
           transition={{ delay: 0.4 }}
           className="font-body text-muted-foreground text-lg leading-relaxed"
         >
-          Παίξε τώρα! Δείξε τα αντανακλαστικά σου και ρίξε την πιο δυνατή φάπα στην Διαφθορά. Μην τον αφήσεις να πάρει ανάσα!
+          {t.language === "en" 
+            ? "Play now! Show your reflexes and give the strongest slap to Corruption. Don't let him take a breath!"
+            : "Παίξε τώρα! Δείξε τα αντανακλαστικά σου και ρίξε την πιο δυνατή φάπα στην Διαφθορά. Μην τον αφήσεις να πάρει ανάσα!"}
         </motion.p>
 
         <motion.div
@@ -61,7 +63,7 @@ export default function SplashScreen({ onStart }) {
           >
             <div className="absolute inset-0 rounded-full bg-white/20 animate-ping group-hover:animate-none opacity-0 group-hover:opacity-10" />
             <Play className="w-8 h-8 mr-3 fill-current" />
-            Συνέχεια
+            {t.continue}
           </Button>
         </motion.div>
       </div>
