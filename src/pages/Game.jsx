@@ -144,10 +144,10 @@ export default function Game() {
             clearInterval(timerRef.current);
             setGameState("finishing");
             
-            // Auto-end finishing state after 2.5 seconds if no slap is made
+            // Auto-end finishing state after 3 seconds if no slap is made
             setTimeout(() => {
               setGameState(curr => curr === "finishing" ? "over" : curr);
-            }, 2500);
+            }, 3000);
             
             return 0;
           }
@@ -434,29 +434,27 @@ export default function Game() {
           translations={t}
         />
 
-        {/* Finish Him Overlay */}
+        {/* Finish Him Overlay - Positioned above target, appears at <= 3s */}
         <AnimatePresence>
-          {gameState === "finishing" && (
+          {(gameState === "finishing" || (gameState === "playing" && timeLeft <= 3)) && (
             <motion.div
-              initial={{ scale: 0.5, opacity: 0 }}
+              initial={{ scale: 0.5, opacity: 0, y: 50 }}
               animate={{ 
                 scale: [1, 1.1, 1],
                 opacity: 1,
+                y: 0,
                 rotate: [-2, 2, -2]
               }}
-              exit={{ scale: 2, opacity: 0 }}
+              exit={{ scale: 1.5, opacity: 0 }}
               transition={{ 
                 duration: 0.2,
                 rotate: { repeat: Infinity, duration: 0.1 }
               }}
-              className="fixed inset-0 z-[150] flex flex-col items-center justify-center pointer-events-none bg-red-950/20 backdrop-blur-[2px]"
+              className="fixed top-[20%] left-0 right-0 z-[150] flex flex-col items-center justify-center pointer-events-none"
             >
-              <h2 className="font-display text-7xl md:text-9xl text-primary drop-shadow-[0_0_30px_rgba(255,42,85,0.8)] italic uppercase tracking-tighter animate-pulse">
+              <h2 className="font-display text-6xl md:text-8xl text-primary drop-shadow-[0_0_20px_rgba(255,42,85,0.6)] italic uppercase tracking-tighter">
                 FINISH HIM
               </h2>
-              <p className="font-display text-2xl text-white mt-4 tracking-widest animate-bounce">
-                {language === "el" ? "ΤΕΛΕΙΩΣΕ ΤΟΝ!" : "LAND THE FINAL BLOW!"}
-              </p>
             </motion.div>
           )}
         </AnimatePresence>
