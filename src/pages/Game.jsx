@@ -114,6 +114,7 @@ export default function Game() {
   const [isHighQuality, setIsHighQuality] = useState(true);
   const [gameId, setGameId] = useState(0);
   const [nickname, setNickname] = useState(localStorage.getItem("slap_nickname") || "");
+  const nicknameRef = useRef(localStorage.getItem("slap_nickname") || "");
 
   const t = TRANSLATIONS[language];
   const comboWindow = DIFFICULTY_SETTINGS[difficulty].window;
@@ -136,6 +137,7 @@ export default function Game() {
     const nameToUse = customName || localStorage.getItem("slap_nickname") || nickname;
     if (nameToUse) {
       setNickname(nameToUse);
+      nicknameRef.current = nameToUse;
       localStorage.setItem("slap_nickname", nameToUse);
     }
     setScore(0);
@@ -178,8 +180,8 @@ export default function Game() {
         const uniqueId = `${Date.now()}_${Math.floor(Math.random() * 1000)}`;
         const email = `guest_${uniqueId}@fapa.com`;
         
-        // nickname state is guaranteed to be set by startGame
-        const finalName = nickname || localStorage.getItem("slap_nickname") || "Ανώνυμος";
+        // nicknameRef.current is ALWAYS the latest value (no stale closure)
+        const finalName = nicknameRef.current || localStorage.getItem("slap_nickname") || "Ανώνυμος";
 
         const dataToSave = {
           player_email: String(email),
@@ -286,12 +288,14 @@ export default function Game() {
           {gameState === "intro" && (
             <SplashScreen 
               onStart={(name, isPartial) => {
-              if (name && String(name) !== "[object Object]") {
-                setNickname(String(name));
-                localStorage.setItem("slap_nickname", String(name));
-              }
-              if (!isPartial) setGameState("idle");
-            }} 
+                if (name && String(name) !== "[object Object]") {
+                  const cleanName = String(name);
+                  setNickname(cleanName);
+                  nicknameRef.current = cleanName;
+                  localStorage.setItem("slap_nickname", cleanName);
+                }
+                if (!isPartial) setGameState("idle");
+              }} 
             translations={t} 
             defaultNickname={localStorage.getItem("slap_nickname") || ""}
           />
