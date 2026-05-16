@@ -169,7 +169,7 @@ export default function Game() {
   // Save score when game ends
   useEffect(() => {
     if (gameState === "over") {
-      // According to RLS rules, user MUST be authenticated and email must match user email
+      if (currentUser) {
         // Sanitize data and ensure name is a clean string
         const rawName = nickname || currentUser.full_name || currentUser.email.split("@")[0];
         const cleanName = typeof rawName === 'object' ? (rawName.display_name || rawName.full_name || JSON.stringify(rawName)) : String(rawName);
