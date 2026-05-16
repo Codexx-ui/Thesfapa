@@ -1,15 +1,16 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Play } from 'lucide-react';
 
 export default function SplashScreen({ onStart, translations: t, defaultNickname = "" }) {
-  const inputRef = React.useRef(null);
+  const [inputName, setInputName] = useState(defaultNickname);
 
-  // Sync window.tempNickname on mount if it's empty
-  if (!window.tempNickname && defaultNickname) {
-    window.tempNickname = defaultNickname;
-  }
+  const handleStart = () => {
+    const finalName = inputName.trim() || defaultNickname.trim() || "";
+    onStart(finalName);
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -20,15 +21,11 @@ export default function SplashScreen({ onStart, translations: t, defaultNickname
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div
           className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] rounded-full opacity-20"
-          style={{
-            background: "radial-gradient(circle, #ff2a55, transparent 70%)",
-          }}
+          style={{ background: "radial-gradient(circle, #ff2a55, transparent 70%)" }}
         />
         <div
           className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] rounded-full opacity-20"
-          style={{
-            background: "radial-gradient(circle, #7c3aed, transparent 70%)",
-          }}
+          style={{ background: "radial-gradient(circle, #7c3aed, transparent 70%)" }}
         />
       </div>
 
@@ -52,7 +49,7 @@ export default function SplashScreen({ onStart, translations: t, defaultNickname
           transition={{ delay: 0.4 }}
           className="font-body text-muted-foreground text-base md:text-lg leading-relaxed max-w-md mx-auto"
         >
-          {t.language === "en" 
+          {t.language === "en"
             ? "Play now! Show your reflexes and give the strongest slap to Corruption."
             : "Παίξε τώρα! Δείξε τα αντανακλαστικά σου και ρίξε την πιο δυνατή φάπα στην Διαφθορά."}
         </motion.p>
@@ -67,16 +64,11 @@ export default function SplashScreen({ onStart, translations: t, defaultNickname
             {t.nickname}
           </label>
           <input
-            ref={inputRef}
             type="text"
-            defaultValue={defaultNickname}
+            value={inputName}
             placeholder={t.enter_name}
             className="w-full h-11 px-5 rounded-xl bg-white/5 border border-white/10 text-white font-display text-base focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all placeholder:text-white/20"
-            onChange={(e) => {
-              const val = e.target.value;
-              window.tempNickname = val;
-              onStart(val, true);
-            }}
+            onChange={(e) => setInputName(e.target.value)}
           />
         </motion.div>
 
@@ -86,10 +78,7 @@ export default function SplashScreen({ onStart, translations: t, defaultNickname
           transition={{ delay: 0.7, type: "spring" }}
         >
           <Button
-            onClick={() => {
-              const finalVal = inputRef.current?.value || window.tempNickname || defaultNickname;
-              onStart(finalVal, false);
-            }}
+            onClick={handleStart}
             size="lg"
             className="group relative font-display text-xl h-16 px-12 rounded-full bg-primary hover:bg-primary/90 text-white shadow-[0_0_30px_rgba(255,42,85,0.4)] transition-all hover:scale-105 active:scale-95 w-full md:w-auto"
           >

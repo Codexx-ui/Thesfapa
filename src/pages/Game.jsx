@@ -287,14 +287,12 @@ export default function Game() {
         <AnimatePresence>
           {gameState === "intro" && (
             <SplashScreen 
-              onStart={(name, isPartial) => {
-                if (name && String(name) !== "[object Object]") {
-                  const cleanName = String(name);
-                  setNickname(cleanName);
-                  nicknameRef.current = cleanName;
-                  localStorage.setItem("slap_nickname", cleanName);
-                }
-                if (!isPartial) setGameState("idle");
+              onStart={(name) => {
+                const cleanName = name && String(name).trim() !== "" ? String(name).trim() : "Ανώνυμος";
+                setNickname(cleanName);
+                nicknameRef.current = cleanName;
+                localStorage.setItem("slap_nickname", cleanName);
+                setGameState("idle");
               }} 
             translations={t} 
             defaultNickname={localStorage.getItem("slap_nickname") || ""}
