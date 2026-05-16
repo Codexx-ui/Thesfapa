@@ -62,8 +62,25 @@ function ShareButton({ score, maxCombo }) {
   );
 }
 
-export default function GameOverModal({ score, maxCombo, totalSlaps, onRestart, onHome, currentUserEmail }) {
-  const rank = getRank(score);
+export default function GameOverModal({ score, maxCombo, totalSlaps, onRestart, onHome, currentUserEmail, translations: t }) {
+  const isEn = t.language === "en";
+  const rankLabels = {
+    slap_god: isEn ? "SLAP GOD 🏆" : "ΘΕΟΣ ΤΗΣ ΦΑΠΑΣ 🏆",
+    slap_master: isEn ? "SLAP MASTER 🔥" : "ΔΑΣΚΑΛΟΣ ΤΗΣ ΦΑΠΑΣ 🔥",
+    slap_warrior: isEn ? "SLAP WARRIOR ⚔️" : "ΜΑΧΗΤΗΣ ΤΗΣ ΦΑΠΑΣ ⚔️",
+    slap_rookie: isEn ? "SLAP ROOKIE 👋" : "ΝΕΟΣ ΦΑΠΑΣΤΗΣ 👋",
+    slap_newbie: isEn ? "SLAP NEWBIE 😅" : "ΑΡΧΑΡΙΟΣ 😅"
+  };
+
+  const getRankInfo = (s) => {
+    if (s >= 100) return { label: rankLabels.slap_god, color: "text-secondary" };
+    if (s >= 70) return { label: rankLabels.slap_master, color: "text-primary" };
+    if (s >= 40) return { label: rankLabels.slap_warrior, color: "text-accent" };
+    if (s >= 20) return { label: rankLabels.slap_rookie, color: "text-muted-foreground" };
+    return { label: rankLabels.slap_newbie, color: "text-muted-foreground" };
+  };
+
+  const rank = getRankInfo(score);
   const funnyComment = React.useState(() => getFunnyComment())[0];
   const [showLeaderboard, setShowLeaderboard] = useState(false);
 
@@ -71,13 +88,13 @@ export default function GameOverModal({ score, maxCombo, totalSlaps, onRestart, 
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className="fixed inset-0 bg-foreground/60 backdrop-blur-sm flex items-center justify-center z-50 p-4 overflow-y-auto"
+      className="fixed inset-0 bg-foreground/60 backdrop-blur-sm flex items-center justify-center z-[100] p-4 overflow-y-auto"
     >
       <motion.div
         initial={{ scale: 0.5, y: 50 }}
         animate={{ scale: 1, y: 0 }}
         transition={{ type: "spring", damping: 15, stiffness: 200 }}
-        className="bg-card rounded-3xl shadow-2xl p-6 max-w-sm w-full text-center space-y-5 my-4"
+        className="bg-card border-2 border-primary/20 rounded-3xl shadow-2xl p-6 max-w-sm w-full text-center space-y-5 my-4"
       >
         <motion.div
           initial={{ rotate: -10 }}
@@ -88,29 +105,29 @@ export default function GameOverModal({ score, maxCombo, totalSlaps, onRestart, 
         </motion.div>
 
         <div>
-          <h2 className="font-display text-2xl text-foreground">TIME'S UP!</h2>
+          <h2 className="font-display text-2xl text-foreground uppercase">{t.game_over}</h2>
           <p className={`font-display text-xl mt-1 ${rank.color}`}>{rank.label}</p>
           <p className="font-body text-sm text-muted-foreground mt-2 italic">"{funnyComment}"</p>
         </div>
 
-        <div className="bg-muted rounded-2xl p-4 space-y-3">
+        <div className="bg-muted/50 border border-border rounded-2xl p-4 space-y-3">
           <div className="flex items-center justify-between">
-            <span className="flex items-center gap-2 text-muted-foreground font-body text-sm">
-              <Zap className="w-4 h-4" /> Score
+            <span className="flex items-center gap-2 text-muted-foreground font-body text-xs uppercase tracking-wider">
+              <Zap className="w-4 h-4" /> {t.points}
             </span>
             <span className="font-display text-2xl text-foreground">{score}</span>
           </div>
-          <div className="h-px bg-border" />
+          <div className="h-px bg-border/50" />
           <div className="flex items-center justify-between">
-            <span className="flex items-center gap-2 text-muted-foreground font-body text-sm">
-              <Flame className="w-4 h-4" /> Best Combo
+            <span className="flex items-center gap-2 text-muted-foreground font-body text-xs uppercase tracking-wider">
+              <Flame className="w-4 h-4" /> {t.max_combo}
             </span>
             <span className="font-display text-xl text-primary">x{maxCombo}</span>
           </div>
-          <div className="h-px bg-border" />
+          <div className="h-px bg-border/50" />
           <div className="flex items-center justify-between">
-            <span className="flex items-center gap-2 text-muted-foreground font-body text-sm">
-              👋 Total Slaps
+            <span className="flex items-center gap-2 text-muted-foreground font-body text-xs uppercase tracking-wider">
+              👋 {t.slaps}
             </span>
             <span className="font-display text-xl text-foreground">{totalSlaps}</span>
           </div>
@@ -120,10 +137,10 @@ export default function GameOverModal({ score, maxCombo, totalSlaps, onRestart, 
           onClick={() => setShowLeaderboard(true)}
           size="lg"
           variant="outline"
-          className="w-full font-display text-base h-12 rounded-xl gap-2"
+          className="w-full font-display text-base h-12 rounded-xl gap-2 border-primary/30 text-primary hover:bg-primary/5"
         >
           <Trophy className="w-4 h-4 text-secondary" />
-          GLOBAL HIGH SCORES
+          LEADERBOARD
         </Button>
 
         <ShareButton score={score} maxCombo={maxCombo} />
@@ -134,7 +151,7 @@ export default function GameOverModal({ score, maxCombo, totalSlaps, onRestart, 
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="fixed inset-0 bg-foreground/70 backdrop-blur-sm flex items-center justify-center z-[60] p-4"
+              className="fixed inset-0 bg-foreground/70 backdrop-blur-sm flex items-center justify-center z-[110] p-4"
               onClick={() => setShowLeaderboard(false)}
             >
               <motion.div
@@ -148,10 +165,10 @@ export default function GameOverModal({ score, maxCombo, totalSlaps, onRestart, 
                 <Leaderboard currentUserEmail={currentUserEmail} />
                 <Button
                   onClick={() => setShowLeaderboard(false)}
-                  className="w-full mt-3 font-display rounded-xl"
+                  className="w-full mt-3 font-display rounded-xl h-12"
                   variant="outline"
                 >
-                  ΚΛΕΙΣΙΜΟ
+                  {isEn ? "CLOSE" : "ΚΛΕΙΣΙΜΟ"}
                 </Button>
               </motion.div>
             </motion.div>
@@ -163,17 +180,17 @@ export default function GameOverModal({ score, maxCombo, totalSlaps, onRestart, 
             onClick={onHome}
             size="lg"
             variant="outline"
-            className="flex-1 font-display text-lg h-14 rounded-xl"
+            className="flex-1 font-display text-lg h-14 rounded-xl border-border hover:bg-muted"
           >
             🏠 HOME
           </Button>
           <Button
             onClick={onRestart}
             size="lg"
-            className="flex-1 font-display text-lg h-14 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg"
+            className="flex-1 font-display text-lg h-14 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg shadow-primary/20"
           >
             <RotateCcw className="w-5 h-5 mr-2" />
-            ΞΑΝΑ!
+            {t.restart}
           </Button>
         </div>
       </motion.div>

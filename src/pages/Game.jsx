@@ -426,6 +426,7 @@ export default function Game() {
               onRestart={startGame}
               onHome={() => setGameState("idle")}
               currentUserEmail={currentUser?.email}
+              translations={t}
             />
           )}
         </AnimatePresence>
