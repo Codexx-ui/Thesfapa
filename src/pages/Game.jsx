@@ -189,7 +189,8 @@ export default function Game() {
                       : "text-muted-foreground hover:text-foreground"
                   )}
                 >
-                  🔫 GUN
+                  <img src="https://img.icons8.com/color/512/gun.png" alt="gun" className="w-5 h-5 inline-block mr-2" />
+                  GUN
                 </button>
               </div>
 
@@ -233,7 +234,7 @@ export default function Game() {
 
               {/* In-game weapon switcher */}
               <div className="flex gap-2 bg-card/80 backdrop-blur rounded-2xl p-2 shadow-inner border border-border">
-                {[["slap","👋"],["punch","👊"],["gun","🔫"]].map(([m, icon]) => (
+                {[["slap","👋"],["punch","👊"],["gun", <img key="gun-img" src="https://img.icons8.com/color/512/gun.png" alt="gun" className="w-8 h-8 object-contain" />]].map(([m, icon]) => (
                   <button
                     key={m}
                     onClick={() => setMode(m)}
