@@ -173,32 +173,27 @@ export default function Game() {
   useEffect(() => {
     if (gameState === "over") {
       try {
-        // 1. Get the latest nickname from storage or state
-        const storedNickname = localStorage.getItem("slap_nickname");
-        const currentNickname = nickname || storedNickname;
+        // 1. Get the nickname directly from LocalStorage
+        const savedNickname = localStorage.getItem("slap_nickname");
+        const email = currentUser?.email || `guest_${Date.now()}@fapa.com`;
         
-        // 2. Identify the player
-        const email = currentUser?.email || `guest_${Date.now()}_${Math.floor(Math.random() * 1000)}@fapa.com`;
+        // 2. Prioritize Nickname -> Gmail Name -> Anonymous
+        let finalName = "";
         
-        // 3. Prioritize Nickname over Gmail Name
-        let rawName = currentNickname;
-        
-        // If nickname is empty or broken, fallback to Gmail name
-        if (!rawName || rawName === "[object Object]") {
-          rawName = (currentUser && (currentUser.full_name || currentUser.display_name)) || "Ανώνυμος Φαπατζής";
+        if (savedNickname && savedNickname !== "[object Object]") {
+          finalName = String(savedNickname);
+        } else if (currentUser) {
+          const rawUserName = currentUser.full_name || currentUser.display_name || currentUser.email.split("@")[0];
+          finalName = typeof rawUserName === 'object' ? (rawUserName.display_name || rawUserName.full_name || "Guest") : String(rawUserName);
         }
         
-        // Final safety net to ensure rawName is NOT an object
-        if (typeof rawName === 'object' && rawName !== null) {
-          rawName = rawName.display_name || rawName.full_name || "Φαπατζής";
+        if (!finalName || finalName === "[object Object]") {
+          finalName = "Παίκτης";
         }
-        
-        let cleanName = String(rawName);
-        if (cleanName === "[object Object]") cleanName = "Φαπατζής";
 
         const dataToSave = {
           player_email: String(email),
-          player_name: cleanName,
+          player_name: String(finalName),
           score: Number(score || 0),
           max_combo: Number(maxCombo || 0),
         };
@@ -207,7 +202,7 @@ export default function Game() {
           .then(() => {
             toast({
               title: "Σκορ Αποθηκεύτηκε!",
-              description: `${cleanName}: ${score} πόντοι`,
+              description: `${finalName}: ${score} πόντοι`,
             });
           })
           .catch(err => {
@@ -301,16 +296,16 @@ export default function Game() {
           {gameState === "intro" && (
             <SplashScreen 
               onStart={(name, isPartial) => {
-                if (name) {
-                  setNickname(String(name));
-                  localStorage.setItem("slap_nickname", String(name));
-                }
-                if (!isPartial) setGameState("idle");
-              }} 
-              translations={t} 
-              defaultNickname={nickname}
-            />
-          )}
+              if (name && String(name) !== "[object Object]") {
+                setNickname(String(name));
+                localStorage.setItem("slap_nickname", String(name));
+              }
+              if (!isPartial) setGameState("idle");
+            }} 
+            translations={t} 
+            defaultNickname={localStorage.getItem("slap_nickname") || ""}
+          />
+        )}
         </AnimatePresence>
 
         {/* Character Selection - REPLACED BY SETTINGS MODAL */}
