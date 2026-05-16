@@ -14,8 +14,33 @@ import BackgroundMusic from "../components/game/BackgroundMusic";
 const GAME_DURATION = 15;
 const COMBO_WINDOW = 700;
 
+const CHARACTERS = [
+  {
+    id: "default",
+    name: "Λέρα",
+    image: "https://media.base44.com/images/public/6a02d2983989447500838a5e/15c2a163e_tar.jpeg",
+    bg: "https://images.unsplash.com/photo-1540206395-68808572332f?q=80&w=1000&auto=format&fit=crop",
+    description: "Ο κλασικός στόχος"
+  },
+  {
+    id: "mitsotakis",
+    name: "Μητσοτάκης",
+    image: "https://upload.wikimedia.org/wikipedia/commons/c/c0/Kyriakos_Mitsotakis_2023.jpg",
+    bg: "https://upload.wikimedia.org/wikipedia/commons/c/cd/Hellenic_Parliament_Athens.jpg",
+    description: "Πύργος Edition"
+  },
+  {
+    id: "adonis",
+    name: "Άδωνης",
+    image: "https://upload.wikimedia.org/wikipedia/commons/c/c5/Adonis_Georgiadis_2023.jpg",
+    bg: "https://upload.wikimedia.org/wikipedia/commons/c/cd/Hellenic_Parliament_Athens.jpg",
+    description: "Υπουργική Φάπα"
+  }
+];
+
 export default function Game() {
   const [gameState, setGameState] = useState("intro"); // intro | idle | playing | over
+  const [character, setCharacter] = useState(CHARACTERS[0]);
   const [mode, setMode] = useState("slap"); // slap | punch | gun
   const [score, setScore] = useState(0);
   const [combo, setCombo] = useState(0);
@@ -115,12 +140,38 @@ export default function Game() {
 
       <BackgroundMusic autoStart={gameState !== "intro"} />
 
+      <div className="fixed inset-0 pointer-events-none opacity-30">
+        <img
+          src={character.bg}
+          alt="bg"
+          className="w-full h-full object-cover grayscale-[0.5]"
+        />
+      </div>
+
       <div className="relative z-10 flex flex-col items-center gap-8 w-full max-w-md">
         <AnimatePresence>
           {gameState === "intro" && (
             <SplashScreen onStart={() => setGameState("idle")} />
           )}
         </AnimatePresence>
+
+        {/* Character Selection (only in idle) */}
+        {gameState === "idle" && (
+          <div className="flex gap-4 mb-4">
+            {CHARACTERS.map((c) => (
+              <button
+                key={c.id}
+                onClick={() => setCharacter(c)}
+                className={cn(
+                  "relative w-20 h-20 rounded-full border-2 overflow-hidden transition-all",
+                  character.id === c.id ? "border-primary scale-110 shadow-lg" : "border-transparent opacity-50 grayscale"
+                )}
+              >
+                <img src={c.image} alt={c.name} className="w-full h-full object-cover" />
+              </button>
+            ))}
+          </div>
+        )}
 
         {/* Title */}
         <motion.div
@@ -235,6 +286,7 @@ export default function Game() {
                 onSlap={handleSlap}
                 disabled={gameState !== "playing"}
                 mode={mode}
+                targetImage={character.image}
               />
 
               {/* In-game weapon switcher */}

@@ -74,7 +74,7 @@ function FPSWeapon({ mode, fireKey }) {
   );
 }
 
-export default function SlapTarget({ onSlap, disabled, mode }) {
+export default function SlapTarget({ onSlap, disabled, mode, targetImage }) {
   const [floaters, setFloaters]     = useState([]);
   const [slapEffect, setSlapEffect] = useState(null);
   const [redFlash, setRedFlash]     = useState(0);   // counter → key for CSS anim
@@ -252,7 +252,7 @@ export default function SlapTarget({ onSlap, disabled, mode }) {
           style={{ WebkitTapHighlightColor: "transparent" }}
         >
           <img
-            src={FACE_IMAGE}
+            src={targetImage || FACE_IMAGE}
             alt="target"
             className="w-full h-full object-cover object-top"
             draggable={false}
