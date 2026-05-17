@@ -2,7 +2,7 @@
 // Reads from raw GitHub (no auth), writes via GitHub API (needs token)
 
 const REPO_OWNER = "Codexx-ui";
-const REPO_NAME = "TheSlapGame";
+const REPO_NAME = "Thesfapa";
 const FILE_PATH = "public/leaderboard.json";
 const BRANCH = "main";
 const GITHUB_TOKEN = import.meta.env.VITE_GITHUB_TOKEN || "";
